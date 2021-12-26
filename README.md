@@ -34,3 +34,11 @@ PS: You can even clone the existing theme you are using. So, getting a custom th
 3. Add this partial call as per your liking `{{ partial "posts_stats.html" . }}`.
 
 4. Click *Update Template*. You should see a section added to the respective page.
+
+5. You can style this stats section by adding a rule for class `post-stats` in your `.css`. A reference is shown below.
+
+```
+.post-stats {
+	background: yellow;
+}
+```
