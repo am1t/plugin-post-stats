@@ -4,9 +4,9 @@
     "description": "Displays stats about published posts",
     "fields": [
       {
-        "field": "post_stats_since",
+        "field": "params.post_stats_since",
         "label": "Posting Since",
-        "placeholder": "December 2021"
+        "placeholder": "December, 2021"
       }
     ]
   }
