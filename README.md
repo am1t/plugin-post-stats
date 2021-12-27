@@ -19,8 +19,6 @@ Here are the steps to add the plugin to your Site. Note that once the plugin is 
 
 5. The plug-in should be available in the plugins list now.
 
-6. You can configure the `date` when you had published your first post. Go to "Plug-in" section and press ⚙️ Settings for the above added plugin.
-
 ### Word Count and Post Count as Shortcodes
 
 The plugin also publishes you words count and posts count as shortcodes. You can use `{{< wordcount >}}` or `{{< postcount >}}` annywhere on your markdown pages. These would be replaced by the respective values.
