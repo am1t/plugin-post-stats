@@ -1,0 +1,75 @@
+{{ $posts := where site.RegularPages "Type" "post" }}
+
+{{ $titlePostsCount := len ( where $posts ".Params.title"  "!=" nil ) }}
+{{ $microPostsCount := len ( where $posts ".Params.title"  "=" nil ) }}
+
+{{ $scratch := newScratch }}
+{{ range $posts }}
+    {{ $scratch.Add "wordcount" .WordCount }}
+{{ end }}
+
+{{ $postCount :=  len ($posts) }}
+{{ $wordCount := $scratch.Get "wordcount" }}
+{{ $avgPostLength := div $wordCount $postCount }}
+<table>
+    <tr>
+        <td width="30%">Total Posts Published</td>
+        <td width="70%">{{ $postCount }}</td>
+    </tr>
+    <tr>
+		<td>Total Words Written</td>
+		<td>{{ $wordCount }}{{ if gt $wordCount 40000 }} (that's almost {{ div $wordCount 40000 }} novellas){{ end }}</td>
+	</tr>
+    <tr>
+		<td>Average Words per Post</td>
+		<td>{{ $avgPostLength }}</td>
+	</tr>
+    <tr>
+		<td>First Post Published</td>
+		<td>
+            {{ range last 1 $posts }}
+                {{ if .Title }}<a href="{{ .Permalink }}">{{ .Title }}</a> published on {{ .Date.Format "2006-01-02" }}
+				{{ else }}<a href="{{ .Permalink }}">Micro Post</a> published on {{ .Date.Format "2006-01-02" }} 
+				{{ end }}
+            {{ end }}
+		</td>
+	</tr>
+    <tr>
+		<td>Posts with Title</td>
+		<td>{{ $titlePostsCount }}</td>
+	</tr>
+    <tr>
+		<td>Posts without Title</td>
+		<td>{{ $microPostsCount }}</td>
+	</tr>
+</table>
+
+{{ $grouped := $posts.GroupByDate "2006" }}
+
+<h3>Posts Per Year</h3>
+<table>
+    <tr>
+        <td width="50%">Year</td>
+        <td width="50%">Number of Posts</td>
+    </tr>
+    {{ range $grouped }}
+    <tr>
+        <td>{{ .Key }}</td>
+        <td>{{ len (where .Pages "Type" "post") }}</td>
+    </tr>
+    {{ end }}
+</table>
+
+<h3>Posts Per Category</h3>
+<table>
+    <tr>
+        <td width="50%">Category</td>
+        <td width="50%">Number of Posts</td>
+    </tr>
+    {{ range $name, $taxonomy := .Site.Taxonomies.categories }}
+    <tr>
+        <td>{{ $name | humanize }}</td>
+        <td>{{ $taxonomy.Count }}</td>
+    </tr>
+    {{ end }}
+</table>

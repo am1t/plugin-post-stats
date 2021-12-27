@@ -1,0 +1,20 @@
+table {
+    display: inline-block;
+    font-size: .88889rem;
+    line-height: 1.5;
+    margin: 0 0 1.66667rem;
+    max-width: 100%;
+    overflow-x: auto;
+    text-align: left;
+    width:auto
+}
+
+td, th {
+    border-bottom: 1px solid #eee;
+    padding:.5em 5px
+}
+
+th {
+    color: #1d1d1d;
+    font-weight:700
+}
