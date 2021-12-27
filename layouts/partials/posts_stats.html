@@ -1,10 +1,14 @@
-{{ $since := $.Site.Params.post_stats_since }}
+{{ $since := "December, 2021" }}
 
 {{ $posts := where site.RegularPages "Type" "post" }}
 
 {{ $scratch := newScratch }}
 {{ range $posts }}
     {{ $scratch.Add "wordcount" .WordCount }}
+{{ end }}
+
+{{ range last 1 $posts }}
+    {{ $since := .Date.Format "January, 2006" }}
 {{ end }}
 
 {{ $postCount :=  len ($posts) }}

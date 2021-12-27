@@ -1,17 +1,13 @@
 # Micro.blog Plugin - Posts Stats
-A Micro.blog plugin that displays stats about all the published posts. A sample screenshot from an archive page displayed below.
+A Micro.blog plugin that adds a `/stats` page to your site to display the stats about all the published posts. A sample screenshot of the stats page is displayed below. And there's a lot more, [demo here](https://www.amitgawande.com/stats/).
 
-![Plugin Posts Stats Screenshot](https://raw.githubusercontent.com/am1t/plugin-post-stats/main/static/images/posts-stats.png)
+![Plugin Posts Stats Screenshot](https://raw.githubusercontent.com/am1t/plugin-post-stats/main/static/images/postsstats.png)
 
 This plugin is built for Micro.blog by [@amit](https://micro.blog/amit).
 
-### Pre-requisite
-
-You need to set up a custom theme for using this plugin to include the section in the desired page. You can [follow the instructions here](https://help.micro.blog/t/custom-themes/59) to setup a custom theme.
-
-PS: You can even clone the existing theme you are using. So, getting a custom theme is easier than it sounds.
-
 ### Installing the plug-in
+
+Here are the steps to add the plugin to your Site. Note that once the plugin is added to the Micro.blog directory, this would not be required.
 
 1. Make sure you are signed in to [Micro.blog](https://micro.blog). Add new plugin to your custom theme by [following this link](https://micro.blog/account/themes/new?plugin=1). You can also go to `Design` → `Edit Custom Themes` → `New Plug-in`.
 
@@ -25,7 +21,16 @@ PS: You can even clone the existing theme you are using. So, getting a custom th
 
 6. You can configure the `date` when you had published your first post. Go to "Plug-in" section and press ⚙️ Settings for the above added plugin.
 
-### Include stats in the custom theme
+### Word Count and Post Count as Shortcodes
+
+The plugin also publishes you words count and posts count as shortcodes. You can use ``{{< wordcount >}}` or `{{< postcount >}}` annywhere on your markdown pages. These would be replaced by the respective values.
+
+
+### Include stats in the custom theme (one liner)
+
+You can also include a one-liner as part of your custom theme on any page (screenshot below).
+
+![Plugin Posts Stats Screenshot Short](https://raw.githubusercontent.com/am1t/plugin-post-stats/main/static/images/posts-stats.png)
 
 1. Create a new custom themeby following [this link](https://micro.blog/account/themes/new). Or you can edit your existing custom theme by going to `Design` → `Edit Custom Themes` and click on your theme.
 
@@ -42,3 +47,8 @@ PS: You can even clone the existing theme you are using. So, getting a custom th
 	background: yellow;
 }
 ```
+
+### Planned Features
+
+* [ ] Include stats for posts with images, audio
+* [ ] Chart for posts by year

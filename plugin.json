@@ -4,12 +4,5 @@
     "description": "Displays stats about published posts",
     "includes": [
         "/assets/css/poststats.css"
-    ],
-    "fields": [
-      {
-        "field": "params.post_stats_since",
-        "label": "Posting Since",
-        "placeholder": "December, 2021"
-      }
     ]
   }

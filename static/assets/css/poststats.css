@@ -1,6 +1,5 @@
 .post-stats-tbl {
     display: inline-block;
-    font-size: .88889rem;
     line-height: 2;
     margin: 0 0 1.66667rem;
     max-width: 100%;
@@ -10,11 +9,10 @@
 }
 
 .post-stats-tbl td, .post-stats-tbl th {
-    border-bottom: 1px solid #eee;
-    padding:.5em 5px
+    border-bottom: #9e9e9e 1px solid;
+    padding:.5em 5px;
 }
 
 .post-stats-tbl th {
-    color: #1d1d1d;
-    font-weight:700
+    font-weight:700;
 }
