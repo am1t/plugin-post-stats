@@ -1,7 +1,7 @@
-table {
+.post-stats-tbl {
     display: inline-block;
     font-size: .88889rem;
-    line-height: 1.5;
+    line-height: 2;
     margin: 0 0 1.66667rem;
     max-width: 100%;
     overflow-x: auto;
@@ -9,12 +9,12 @@ table {
     width:auto
 }
 
-td, th {
+.post-stats-tbl td, .post-stats-tbl th {
     border-bottom: 1px solid #eee;
     padding:.5em 5px
 }
 
-th {
+.post-stats-tbl th {
     color: #1d1d1d;
     font-weight:700
 }

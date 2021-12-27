@@ -11,10 +11,10 @@
 {{ $postCount :=  len ($posts) }}
 {{ $wordCount := $scratch.Get "wordcount" }}
 {{ $avgPostLength := div $wordCount $postCount }}
-<table>
+<table class="post-stats-tbl">
     <tr>
-        <td width="30%">Total Posts Published</td>
-        <td width="70%">{{ $postCount }}</td>
+        <td width="40%">Total Posts Published</td>
+        <td width="60%">{{ $postCount }}</td>
     </tr>
     <tr>
 		<td>Total Words Written</td>
@@ -47,7 +47,7 @@
 {{ $grouped := $posts.GroupByDate "2006" }}
 
 <h3>Posts Per Year</h3>
-<table>
+<table class="post-stats-tbl">
     <tr>
         <td width="50%">Year</td>
         <td width="50%">Number of Posts</td>
@@ -61,7 +61,7 @@
 </table>
 
 <h3>Posts Per Category</h3>
-<table>
+<table class="post-stats-tbl">
     <tr>
         <td width="50%">Category</td>
         <td width="50%">Number of Posts</td>
