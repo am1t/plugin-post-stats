@@ -49,8 +49,8 @@
 <h3>Posts Per Year</h3>
 <table class="post-stats-tbl">
     <tr>
-        <td width="50%">Year</td>
-        <td width="50%">Number of Posts</td>
+        <td width="20%">Year</td>
+        <td width="30%">Number of Posts</td>
     </tr>
     {{ range $grouped }}
     <tr>
@@ -63,8 +63,8 @@
 <h3>Posts Per Category</h3>
 <table class="post-stats-tbl">
     <tr>
-        <td width="50%">Category</td>
-        <td width="50%">Number of Posts</td>
+        <td width="20%">Category</td>
+        <td width="30%">Number of Posts</td>
     </tr>
     {{ range $name, $taxonomy := .Site.Taxonomies.categories }}
     <tr>
