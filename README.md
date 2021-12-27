@@ -23,7 +23,7 @@ Here are the steps to add the plugin to your Site. Note that once the plugin is 
 
 ### Word Count and Post Count as Shortcodes
 
-The plugin also publishes you words count and posts count as shortcodes. You can use ``{{< wordcount >}}` or `{{< postcount >}}` annywhere on your markdown pages. These would be replaced by the respective values.
+The plugin also publishes you words count and posts count as shortcodes. You can use `{{< wordcount >}}` or `{{< postcount >}}` annywhere on your markdown pages. These would be replaced by the respective values.
 
 
 ### Include stats in the custom theme (one liner)

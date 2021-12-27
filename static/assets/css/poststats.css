@@ -16,3 +16,7 @@
 .post-stats-tbl th {
     font-weight:700;
 }
+
+.post-stats-hd {
+    text-decoration: underline;
+}

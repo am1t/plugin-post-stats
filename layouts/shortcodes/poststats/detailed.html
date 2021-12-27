@@ -46,7 +46,7 @@
 
 {{ $grouped := $posts.GroupByDate "2006" }}
 
-<h3>Posts Per Year</h3>
+<h3 class="post-stats-hd">Posts Per Year</h3>
 <table class="post-stats-tbl">
     <tr>
         <td width="20%">Year</td>
@@ -60,7 +60,7 @@
     {{ end }}
 </table>
 
-<h3>Posts Per Category</h3>
+<h3 class="post-stats-hd">Posts Per Category</h3>
 <table class="post-stats-tbl">
     <tr>
         <td width="20%">Category</td>
