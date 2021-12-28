@@ -14,15 +14,15 @@
 <table class="post-stats-tbl">
     <tr>
         <td width="40%">Total Posts Published</td>
-        <td width="60%">{{ $postCount }}</td>
+        <td width="60%">{{ $postCount | lang.NumFmt 0 }}</td>
     </tr>
     <tr>
 		<td>Total Words Written</td>
-		<td>{{ $wordCount }}{{ if gt $wordCount 40000 }} (that's almost {{ div $wordCount 40000 }} novellas){{ end }}</td>
+		<td>{{ $wordCount | lang.NumFmt 0 }}{{ if gt $wordCount 40000 }} (that's almost {{ (div $wordCount 40000) | lang.NumFmt 0 }} novellas){{ end }}</td>
 	</tr>
     <tr>
 		<td>Average Words per Post</td>
-		<td>{{ $avgPostLength }}</td>
+		<td>{{ $avgPostLength | lang.NumFmt 0 }}</td>
 	</tr>
     <tr>
 		<td>First Post Published</td>
@@ -36,11 +36,11 @@
 	</tr>
     <tr>
 		<td>Posts with Title</td>
-		<td>{{ $titlePostsCount }}</td>
+		<td>{{ $titlePostsCount | lang.NumFmt 0 }}</td>
 	</tr>
     <tr>
 		<td>Posts without Title</td>
-		<td>{{ $microPostsCount }}</td>
+		<td>{{ $microPostsCount | lang.NumFmt 0 }}</td>
 	</tr>
 </table>
 
@@ -55,7 +55,7 @@
     {{ range $grouped }}
     <tr>
         <td>{{ .Key }}</td>
-        <td>{{ len (where .Pages "Type" "post") }}</td>
+        <td>{{ len (where .Pages "Type" "post") | lang.NumFmt 0 }}</td>
     </tr>
     {{ end }}
 </table>
@@ -69,7 +69,7 @@
     {{ range $name, $taxonomy := .Site.Taxonomies.categories }}
     <tr>
         <td>{{ $name | humanize }}</td>
-        <td>{{ $taxonomy.Count }}</td>
+        <td>{{ $taxonomy.Count | lang.NumFmt 0 }}</td>
     </tr>
     {{ end }}
 </table>

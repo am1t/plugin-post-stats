@@ -7,46 +7,31 @@ This plugin is built for Micro.blog by [@amit](https://micro.blog/amit).
 
 ### Installing the plug-in
 
-Here are the steps to add the plugin to your Site. Note that once the plugin is added to the Micro.blog directory, this would not be required.
+The plugiin is avialble in the Micro.blog Plug-in directory. Just make sure you are logged in to your account, go to the "Plug-ins" section and click "Find Plug-ins". Install "Posts Stats by @amit".
 
-1. Make sure you are signed in to [Micro.blog](https://micro.blog). Add new plugin to your custom theme by [following this link](https://micro.blog/account/themes/new?plugin=1). You can also go to `Design` → `Edit Custom Themes` → `New Plug-in`.
-
-2. Enter a *Title* (like Posts Stats) and enter *Clone URL* as `https://github.com/am1t/plugin-post-stats`.
-
-3. Choose the Site on which you want to install the plug-in.
-
-4. Click "Add Plug-in"
-
-5. The plug-in should be available in the plugins list now.
+Once installed, you should see a new Menu entry for "Stats" pointing to `/stats`. **Note** that the first run may take some time to display the correct stats.
 
 ### Word Count and Post Count as Shortcodes
 
 The plugin also publishes you words count and posts count as shortcodes. You can use `{{< wordcount >}}` or `{{< postcount >}}` annywhere on your markdown pages. These would be replaced by the respective values.
 
+### Removing Stats from menu
 
-### Include stats in the custom theme (one liner)
+There is no configuration as of now to not show the new page in the Menu. However, you can achieve that by either of the two ways.
 
-You can also include a one-liner as part of your custom theme on any page (screenshot below).
-
-![Plugin Posts Stats Screenshot Short](https://raw.githubusercontent.com/am1t/plugin-post-stats/main/static/images/posts-stats.png?raw=true)
-
-1. Create a new custom themeby following [this link](https://micro.blog/account/themes/new). Or you can edit your existing custom theme by going to `Design` → `Edit Custom Themes` and click on your theme.
-
-2. Open the template you want to add the stats to. For example, to add the stats to the archive page, click on the template `layouts/list.archivehtml.html`
-
-3. Add this partial call as per your liking `{{ partial "posts_stats.html" . }}`.
-
-4. Click *Update Template*. You should see a section added to the respective page.
-
-5. You can style this stats section by adding a rule for class `post-stats` in your `.css`. A reference is shown below.
-
-```
-.post-stats {
-	background: yellow;
-}
-```
+1. "On the web, logged in to your blog go to the design section and click the Edit Custom Themes button. The next page should show a list of themes and plugins. Click on Post Stats plugin. Then you'll see all the associated files. Click on content/stats.md . Edit the menu line to remove the word between speech marks, so you end up with: menu: ''" - [h/t Miraz Jordan](https://micro.blog/Miraz/12310468)
+2. "Add [custom CSS](https://help.micro.blog/t/custom-css/54): `nav a[href='/stats/'] { display: none; }`" - [h/t Sven Dahlstrand](https://micro.blog/sod/12310306) 
 
 ### Planned Features
 
-* [ ] Include stats for posts with images, audio
+* [x] Include stats for posts with images, audio (handled by category)
 * [ ] Chart for posts by year
+
+### Change Log
+
+**Version 1.0:** Released 27th December
+- First version with a sperate Stats page
+- Includes stats summary and posts stats grouped by year and category
+
+**Version 1.0.1:** Released 28th December
+- Display larger number with commas (digits grouped on thousands)
