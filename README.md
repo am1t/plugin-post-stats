@@ -13,7 +13,7 @@ Once installed, you should see a new Menu entry for "Stats" pointing to `/stats`
 
 ### Word Count and Post Count as Shortcodes
 
-The plugin also publishes you words count and posts count as shortcodes. You can use `{{< wordcount >}}` or `{{< postcount >}}` annywhere on your markdown pages. These would be replaced by the respective values.
+The plugin also publishes you words count and posts count as shortcodes. You can use `{{< poststats/wordcount >}}` or `{{< poststats/postcount >}}` annywhere on your markdown pages. These would be replaced by the respective values.
 
 ### Removing Stats from menu
 
