@@ -7,7 +7,7 @@ This plugin is built for Micro.blog by [@amit](https://micro.blog/amit).
 
 ### Installing the plug-in
 
-The plugiin is avialble in the Micro.blog Plug-in directory. Just make sure you are logged in to your account, go to the "Plug-ins" section and click "Find Plug-ins". Install "Posts Stats by @amit".
+The plugi-in is avialble in the Micro.blog Plug-in directory. Just make sure you are logged in to your account, go to the "Plug-ins" section and click "Find Plug-ins". Install "Posts Stats by @amit".
 
 Once installed, you should see a new Menu entry for "Stats" pointing to `/stats`. **Note** that the first run may take some time to display the correct stats.
 
@@ -29,9 +29,15 @@ There is no configuration as of now to not show the new page in the Menu. Howeve
 
 ### Change Log
 
-**Version 1.0:** Released 27th December
+**Version 1.1:** Released 26th January, 2022
+- Added a line chart for posts by year (based on Chart.js)
+- Added support of category cloud (h/t: [Mert Bekir](https://mertbakir.gitlab.io/about/))
+- Added stat to show the longest post
+- Fixed minor styling issues 
+
+**Version 1.0.1:** Released 28th December, 2021
+- Display larger number with commas (digits grouped on thousands)
+
+**Version 1.0:** Released 27th December, 2021
 - First version with a sperate Stats page
 - Includes stats summary and posts stats grouped by year and category
-
-**Version 1.0.1:** Released 28th December
-- Display larger number with commas (digits grouped on thousands)
