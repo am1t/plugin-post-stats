@@ -1,16 +1,13 @@
 .post-stats-tbl {
-    display: inline-block;
     line-height: 2;
     margin: 0 0 1.66667rem;
     max-width: 100%;
     overflow-x: auto;
     text-align: left;
-    width:auto
 }
 
 .post-stats-tbl td, .post-stats-tbl th {
-    border-bottom: #9e9e9e 1px solid;
-    padding:.5em 5px;
+    padding:10px 20px;
 }
 
 .post-stats-tbl th {
@@ -19,4 +16,15 @@
 
 .post-stats-hd {
     text-decoration: underline;
+    margin: 30px auto;
+}
+
+.categorycloud {
+    display:inline-block
+}
+
+a.categorycloud-item {
+    color: inherit;
+    padding: .24rem;
+    white-space: nowrap;
 }

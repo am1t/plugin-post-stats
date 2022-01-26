@@ -4,8 +4,13 @@
 {{ $microPostsCount := len ( where $posts ".Params.title"  "=" nil ) }}
 
 {{ $scratch := newScratch }}
+{{ $scratch.Set "longCount" 0 }}
 {{ range $posts }}
     {{ $scratch.Add "wordcount" .WordCount }}
+	{{ if ge .WordCount ($scratch.Get "longCount") }}
+		{{ $scratch.Set "longestPost" . }}
+		{{ $scratch.Set "longCount" .WordCount }}
+	{{ end }}
 {{ end }}
 
 {{ $postCount :=  len ($posts) }}
@@ -34,6 +39,16 @@
             {{ end }}
 		</td>
 	</tr>
+	<tr>
+		<td>Longest Post Published</td>
+		<td>
+            {{ with $scratch.Get "longestPost" }}
+                {{ if .Title }}<a href="{{ .Permalink }}">{{ .Title }}</a> with {{ .WordCount }} words
+				{{ else }}<a href="{{ .Permalink }}">Micro Post</a> with {{ .WordCount }} words
+				{{ end }}
+            {{ end }}
+		</td>
+	</tr>
     <tr>
 		<td>Posts with Title</td>
 		<td>{{ $titlePostsCount | lang.NumFmt 0 }}</td>
@@ -47,29 +62,65 @@
 {{ $grouped := $posts.GroupByDate "2006" }}
 
 <h3 class="post-stats-hd">Posts Per Year</h3>
+
+<div style="width: 100%;height: 300px;margin: 30px auto">
+    <canvas id="yearchart"></canvas>
+</div>
+
 <table class="post-stats-tbl">
     <tr>
-        <td width="20%">Year</td>
-        <td width="30%">Number of Posts</td>
+        <th width="30%">Year</td>
+        <th width="70%">Number of Posts</td>
     </tr>
-    {{ range $grouped }}
-    <tr>
-        <td>{{ .Key }}</td>
-        <td>{{ len (where .Pages "Type" "post") | lang.NumFmt 0 }}</td>
-    </tr>
+    {{ range $grouped.Reverse }}
+	{{ $yearPostCount := len (where .Pages "Type" "post") }}
+		<tr>
+            <td>{{ .Key }}</td>
+            <td>{{ $yearPostCount | lang.NumFmt 0 }}</td>
+        </tr>
+		{{ $scratch.Add "yearKeys" "'"  }}
+		{{ $scratch.Add "yearKeys" .Key  }}
+		{{ $scratch.Add "yearKeys" "',"  }}
+		{{ $scratch.Add "yearCount" (string $yearPostCount) }}
+		{{ $scratch.Add "yearCount" ","  }}
     {{ end }}
 </table>
 
-<h3 class="post-stats-hd">Posts Per Category</h3>
-<table class="post-stats-tbl">
-    <tr>
-        <td width="20%">Category</td>
-        <td width="30%">Number of Posts</td>
-    </tr>
-    {{ range $name, $taxonomy := .Site.Taxonomies.categories }}
-    <tr>
-        <td>{{ $name | humanize }}</td>
-        <td>{{ $taxonomy.Count | lang.NumFmt 0 }}</td>
-    </tr>
+{{ $chartPre := "{type: 'line',data: {labels: [" }}
+{{ $chartYearKeys := trim ($scratch.Get "yearKeys") ","}}
+{{ $chartYearCount := trim ($scratch.Get "yearCount") ","}}
+{{ $chartMid := "],datasets: [{label: 'Posts Published',data: [" }}
+{{ $chartPost := "],backgroundColor: 'rgb(54, 162, 235)',borderColor: 'rgb(54, 162, 235)',borderWidth: 1}]},options: {maintainAspectRatio: false,scales: {yAxes: [{ticks: {beginAtZero: true}}]}}}" }}
+
+
+{{ $chartData := printf "%s" $chartPost | printf "%s%s" $chartYearCount | printf "%s%s" $chartMid | printf "%s%s" $chartYearKeys | printf "%s%s" $chartPre | printf "%s" }}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.min.js"></script>
+<script type="text/javascript">
+    var ctx = document.getElementById('yearchart').getContext('2d');
+    var options = {{ $chartData | safeJS }};
+    new Chart(ctx, options);
+</script>
+
+<h3 class="post-stats-hd">Category Cloud for Posts</h3>
+<div class="categorycloud">
+    {{ if ne (len $.Site.Taxonomies.categories) 0 }}
+      {{ $largestFontSize := 1.4 }}
+      {{ $smallestFontSize := 1.0 }}
+      {{ $fontSpread := sub $largestFontSize $smallestFontSize }}
+      {{ $max := add (len (index $.Site.Taxonomies.categories.ByCount 0).Pages) 1 }}
+      {{ $min := len (index $.Site.Taxonomies.categories.ByCount.Reverse 0).Pages }}
+      {{ $spread := sub $max $min }}
+      {{ $fontStep := div $fontSpread $spread }}
+        {{ range $name, $taxonomy := $.Site.Taxonomies.categories }}
+          {{ $categoryCount := len $taxonomy.Pages }}
+          {{ $currentFontSize := (add $smallestFontSize (mul (sub $categoryCount $min) $fontStep) ) }}
+          {{ $weigth := div (sub (math.Log $categoryCount) (math.Log $min)) (sub (math.Log $max) (math.Log $min)) }}
+          {{ $currentFontSize := (add $smallestFontSize (mul (sub $largestFontSize $smallestFontSize) $weigth)) }}
+            <a href="{{ "/categories/" | relURL }}{{ $name | urlize }}" 
+            class="categorycloud-item" style="font-size: {{ $currentFontSize }}rem;">
+              {{ $name }}<sup>{{ $categoryCount }}</sup>
+            </a>
+        {{ end }}
     {{ end }}
-</table>
+</div>
