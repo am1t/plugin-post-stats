@@ -29,6 +29,9 @@ There is no configuration as of now to not show the new page in the Menu. Howeve
 
 ### Change Log
 
+**Version 1.1.3:** Released 25th May, 2024
+- Make table of posts by year collapsible
+
 **Version 1.1:** Released 26th January, 2022
 - Added a line chart for posts by year (based on Chart.js)
 - Added support of category cloud (h/t: [Mert Bekir](https://mertbakir.gitlab.io/about/))
