@@ -67,6 +67,9 @@
     <canvas id="yearchart"></canvas>
 </div>
 
+<button id="toggleTableBtn">Show Posts by Year</button>
+
+<div id="tableContainer" class="collapsed"></div>
 <table class="post-stats-tbl">
     <tr>
         <th width="30%">Year</td>
@@ -85,6 +88,7 @@
 		{{ $scratch.Add "yearCount" ","  }}
     {{ end }}
 </table>
+</div>
 
 {{ $chartPre := "{type: 'line',data: {labels: [" }}
 {{ $chartYearKeys := trim ($scratch.Get "yearKeys") ","}}

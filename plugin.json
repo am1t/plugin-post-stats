@@ -3,6 +3,7 @@
     "title": "Posts Stats",
     "description": "Displays stats about published posts",
     "includes": [
-        "/assets/css/poststats.css"
+        "/assets/css/poststats.css",
+        "/assets/js/poststats.js"
     ]
   }

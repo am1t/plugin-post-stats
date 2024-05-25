@@ -25,7 +25,7 @@ There is no configuration as of now to not show the new page in the Menu. Howeve
 ### Planned Features
 
 * [x] Include stats for posts with images, audio (handled by category)
-* [ ] Chart for posts by year
+* [x] Chart for posts by year
 
 ### Change Log
 

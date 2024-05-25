@@ -28,3 +28,27 @@ a.categorycloud-item {
     padding: .24rem;
     white-space: nowrap;
 }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 8px;
+}
+
+#tableContainer.collapsed {
+    display: none;
+}
+
+#toggleTableBtn {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    padding: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+    font-size: 16px;
+    text-align: center;
+}
