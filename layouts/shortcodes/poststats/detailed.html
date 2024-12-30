@@ -63,8 +63,11 @@
 {{ $recapYear := cond (gt $now.Month 11) $now.Year (sub $now.Year 1) }}
 {{ $lastYear := sub $recapYear 1 }}
 
-{{ $recapPosts := where .Site.RegularPages "Type" "post" | where "Date.Year" $recapYear }}
-{{ $postsLastYear := where .Site.RegularPages "Type" "post" | where "Date.Year" $lastYear }}
+{{ $recapPosts := where .Site.RegularPages "Type" "post" }}
+{{ $postsLastYear := where .Site.RegularPages "Type" "post" }}
+
+{{ $recapPosts := where $recapPosts "Date.Year" $recapYear }}
+{{ $postsLastYear := where $postsLastYear "Date.Year" $lastYear }}
 
 {{ $postsChange := sub (len $recapPosts) (len $postsLastYear) }}
 {{ $arrow := "" }}
