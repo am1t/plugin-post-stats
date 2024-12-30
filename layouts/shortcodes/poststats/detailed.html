@@ -199,7 +199,7 @@
 </script>
 
 <!-- Chart for posts by month -->
-{{ $groupedRecap := groupBy $recapPosts "Date.Month" }}
+{{ $groupedRecap := $recapPosts.GroupByDate "January" }}
 
 {{ range $i, $group := $groupedRecap }}
     {{ $month := (time "2006-01-02" (printf "%d-01-01" $i)).Format "January" }}
