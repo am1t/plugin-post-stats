@@ -83,7 +83,7 @@
 
 {{ $recapTitled := len ( where $recapPosts ".Params.title"  "!=" nil ) }}
 {{ $recapMicro := len ( where $recapPosts ".Params.title"  "=" nil ) }}
-{{ $postsWithImages := len( where $recapPosts "Params.image" "!=" "" ) }}
+{{ $postsWithImages := len ( where $recapPosts ".Params.image" "!=" "" ) }}
 
 {{ $recapScratch := newScratch }}
 {{ $recapScratch.Set "longCount" 0 }}
