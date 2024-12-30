@@ -71,7 +71,7 @@
     <tr>
 		<td>Total Words Written</td>
 		<td>
-            {{ $recapWordCount | lang.NumFmt 0 }}{{ if gt $wordCount 500 }} (that's almost {{ (div $wordCount 500) | lang.NumFmt 0 }} toots){{ end }}
+            {{ $recapWordCount | lang.NumFmt 0 }}{{ if gt $recapWordCount 500 }} (that's almost {{ (div $recapWordCount 500) | lang.NumFmt 0 }} toots){{ end }}
             <span style="color: {{ $wordTrendColor }};">{{ $wordTrend }}</span></td>
         </td>
 	</tr>
