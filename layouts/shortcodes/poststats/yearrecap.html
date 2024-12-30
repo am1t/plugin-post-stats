@@ -107,15 +107,15 @@
 
 {{ range $groupedRecap.Reverse }}
     {{ $monthCount := len (where .Pages "Type" "post") }}
-    {{ $scratch.Add "monthKeys" "'"  }}
-	{{ $scratch.Add "monthKeys" .Key }}
-	{{ $scratch.Add "monthKeys" "',"  }}
-	{{ $scratch.Add "monthCount" (string $monthCount) }}
-    {{ $scratch.Add "monthCount" ","  }}
+    {{ $recapScratch.Add "monthKeys" "'"  }}
+	{{ $recapScratch.Add "monthKeys" .Key }}
+	{{ $recapScratch.Add "monthKeys" "',"  }}
+	{{ $recapScratch.Add "monthCount" (string $monthCount) }}
+    {{ $recapScratch.Add "monthCount" ","  }}
 {{ end }}
 
-{{ $chartMonthKeys := trim ($scratch.Get "monthKeys") ","}}
-{{ $chartMonthCount := trim ($scratch.Get "monthCount") ","}}
+{{ $chartMonthKeys := trim ($recapScratch.Get "monthKeys") ","}}
+{{ $chartMonthCount := trim ($recapScratch.Get "monthCount") ","}}
 
 {{ $chartPre := "{type: 'line',data: {labels: [" }}
 {{ $chartMid := "],datasets: [{label: 'Posts Published',data: [" }}
