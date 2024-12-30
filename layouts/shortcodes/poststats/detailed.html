@@ -204,11 +204,10 @@
 <!-- Chart for posts by month -->
 {{ $groupedRecap := $recapPosts.GroupByDate "January" }}
 
-{{ range $i, $group := $groupedRecap }}
-    {{ $month := (time "2006-01-02" (printf "%d-01-01" $i)).Format "January" }}
-    {{ $monthCount := len $group }}
+{{ range $groupedRecap }}
+    {{ $monthCount := len (where .Pages "Type" "post") }}
     {{ $scratch.Add "monthKeys" "'"  }}
-	{{ $scratch.Add "monthKeys" $month  }}
+	{{ $scratch.Add "monthKeys" .Key }}
 	{{ $scratch.Add "monthKeys" "',"  }}
 	{{ $scratch.Add "monthCount" (string $monthCount) }}
     {{ $scratch.Add "monthCount" ","  }}
