@@ -100,7 +100,7 @@
 
 {{ $recapPostCount :=  len ($recapPosts) }}
 {{ $recapWordCount := $recapScratch.Get "wordcount" }}
-{{ $recapAvgPostLength := div $recapWordCount $recapPosts }}
+{{ $recapAvgPostLength := div $recapWordCount $recapPostCount }}
 
 <h3 class="post-stats-hd">Year Recap - {{ $recapYear }}</h3>
 <table class="post-stats-tbl">
