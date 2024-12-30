@@ -70,7 +70,7 @@
     <tr>
 		<td>Total Words Written</td>
 		<td>
-            {{ $recapWordCount | lang.NumFmt 0 }}{{ if gt $recapWordCount 500 }} (that's almost {{ (div $recapWordCount 500) | lang.NumFmt 0 }} tweets){{ end }}
+            {{ $recapWordCount | lang.NumFmt 0 }}{{ if gt $recapWordCount 60 }} (that's almost {{ (div $recapWordCount 60) | lang.NumFmt 0 }} tweets){{ end }}
             <span style="color: {{ $wordTrendColor }};">{{ $wordTrend }}</span></td>
         </td>
 	</tr>
