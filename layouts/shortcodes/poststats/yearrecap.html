@@ -62,7 +62,6 @@
   {{ $wordTrendColor = "gray" }}
 {{ end }}
 
-<h2 class="post-stats-hd">Year Recap - {{ $recapYear }}</h2>
 <table class="post-stats-tbl">
     <tr>
         <td width="40%">Total Posts Published</td>
@@ -79,14 +78,14 @@
 		<td>Insights</td>
 		<td>
             <ul>
-                <li>Average words per post in the year was {{ $recapAvgPostLength | lang.NumFmt 0 }}</li>
                 <li>Posted {{ $postsWithImages | lang.NumFmt 0 }} posts with images</li>
                 {{ if gt $recapTitled $recapMicro }}
                     <li>Posted more posts with title ({{ $recapTitled | lang.NumFmt 0 }}) than without ({{ $recapMicro | lang.NumFmt 0 }})</li>
                 {{ else if gt $recapMicro $recapTitled }}
                     <li>Posted more posts without title ({{ $recapMicro | lang.NumFmt 0 }}) than with ({{ $recapTitled | lang.NumFmt 0 }})</li>
                 {{ end }}
-                <li>Longest Post 
+                <li>Average words per post in the year was {{ $recapAvgPostLength | lang.NumFmt 0 }}</li>
+                <li>Longest Post - 
                     {{ with $recapScratch.Get "longestPost" }}
                         {{ if .Title }}<a href="{{ .Permalink }}">{{ .Title }}</a> with {{ .WordCount }} words
                         {{ else }}<a href="{{ .Permalink }}">Micro Post</a> with {{ .WordCount }} words

@@ -29,6 +29,9 @@ There is no configuration as of now to not show the new page in the Menu. Howeve
 
 ### Change Log
 
+**Version 1.2:** Released 30th December, 2024
+- Added Year recap section for year end summary
+
 **Version 1.1.3:** Released 25th May, 2024
 - Make table of posts by year collapsible
 
