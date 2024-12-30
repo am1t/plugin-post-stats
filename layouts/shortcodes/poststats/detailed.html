@@ -98,9 +98,29 @@
 	{{ end }}
 {{ end }}
 
+{{ range $postsLastYear }}
+    {{ $recapScratch.Add "previouswordcount" .WordCount }}
+{{ end }}
+
 {{ $recapPostCount :=  len ($recapPosts) }}
 {{ $recapWordCount := $recapScratch.Get "wordcount" }}
+{{ $previousWordCount := $recapScratch.Get "previouswordcount" }}
 {{ $recapAvgPostLength := div $recapWordCount $recapPostCount }}
+
+{{ $wordChange := sub $recapWordCount $previousWordCount }}
+{{ $wordTrend := "" }}
+{{ $wordTrendColor := "" }}
+
+{{ if gt $wordChange 0 }}
+  {{ $wordTrend = "↑" }}
+  {{ $wordTrendColor = "green" }}
+{{ else if lt $wordChange 0 }}
+  {{ $wordTrend = "↓" }}
+  {{ $wordTrendColor = "red" }}
+{{ else }}
+  {{ $wordTrend = "→" }}
+  {{ $wordTrendColor = "gray" }}
+{{ end }}
 
 <h3 class="post-stats-hd">Year Recap - {{ $recapYear }}</h3>
 <table class="post-stats-tbl">
@@ -110,29 +130,10 @@
     </tr>
     <tr>
 		<td>Total Words Written</td>
-		<td>{{ $recapWordCount | lang.NumFmt 0 }}{{ if gt $wordCount 500 }} (that's almost {{ (div $wordCount 500) | lang.NumFmt 0 }} toots){{ end }}</td>
-	</tr>
-    <tr>
-		<td>Average Words per Post</td>
-		<td>{{ $recapAvgPostLength | lang.NumFmt 0 }}</td>
-	</tr>
-	<tr>
-		<td>Longest Post Published</td>
 		<td>
-            {{ with $recapScratch.Get "longestPost" }}
-                {{ if .Title }}<a href="{{ .Permalink }}">{{ .Title }}</a> with {{ .WordCount }} words
-				{{ else }}<a href="{{ .Permalink }}">Micro Post</a> with {{ .WordCount }} words
-				{{ end }}
-            {{ end }}
-		</td>
-	</tr>
-    <tr>
-		<td>Posts with Title</td>
-		<td>{{ $recapTitled | lang.NumFmt 0 }}</td>
-	</tr>
-    <tr>
-		<td>Posts without Title</td>
-		<td>{{ $recapMicro | lang.NumFmt 0 }}</td>
+            {{ $recapWordCount | lang.NumFmt 0 }}{{ if gt $wordCount 500 }} (that's almost {{ (div $wordCount 500) | lang.NumFmt 0 }} toots){{ end }}
+            <span style="color: {{ $wordTrendColor }};">{{ $wordTrend }}</span></td>
+        </td>
 	</tr>
     <tr>
 		<td>Insights</td>
@@ -145,6 +146,13 @@
                 {{ else if gt $recapMicro $recapTitled }}
                     <li>Posted more posts without title ({{ $recapMicro | lang.NumFmt 0 }}) than with ({{ $recapTitled | lang.NumFmt 0 }})</li>
                 {{ end }}
+                <li>Longest Post 
+                    {{ with $recapScratch.Get "longestPost" }}
+                        {{ if .Title }}<a href="{{ .Permalink }}">{{ .Title }}</a> with {{ .WordCount }} words
+                        {{ else }}<a href="{{ .Permalink }}">Micro Post</a> with {{ .WordCount }} words
+                        {{ end }}
+                    {{ end }}
+                </li>
             </ul>
         </td>
 	</tr>
