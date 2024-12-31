@@ -62,6 +62,8 @@
   {{ $wordTrendColor = "gray" }}
 {{ end }}
 
+{{ $categories := .Site.Taxonomies.categories.ByCount | first 3 }}
+
 <table class="post-stats-tbl">
     <tr>
         <td width="40%">Total Posts Published</td>
@@ -72,6 +74,16 @@
 		<td>
             {{ $recapWordCount | lang.NumFmt 0 }}{{ if gt $recapWordCount 60 }} (that's almost {{ (div $recapWordCount 60) | lang.NumFmt 0 }} tweets){{ end }}
             <span style="color: {{ $wordTrendColor }};">{{ $wordTrend }}</span></td>
+        </td>
+	</tr>
+    <tr>
+		<td>Top Categories</td>
+		<td>
+            {{ range $categories }}
+            <ul>
+                <li><a href="{{ .Page.Permalink }}">{{ .Page.Title }}</a>: {{ .Count }} posts</li>
+            </ul>
+            {{ end }}
         </td>
 	</tr>
     <tr>
