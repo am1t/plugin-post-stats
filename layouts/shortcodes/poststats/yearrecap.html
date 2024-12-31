@@ -26,7 +26,7 @@
 
 {{ $recapTitled := len ( where $recapPosts ".Params.title"  "!=" nil ) }}
 {{ $recapMicro := len ( where $recapPosts ".Params.title"  "=" nil ) }}
-{{ $postsWithImages := len ( where $recapPosts ".Params.image" "!=" "" ) }}
+{{ $postsWithImages := len ( where $recapPosts ".Params.images" "!=" "" ) }}
 
 {{ $recapScratch := newScratch }}
 {{ $recapScratch.Set "longCount" 0 }}
@@ -62,6 +62,8 @@
   {{ $wordTrendColor = "gray" }}
 {{ end }}
 
+{{ $categories := .Params.categories | sort "len" "desc" | first 3 }}
+
 <table class="post-stats-tbl">
     <tr>
         <td width="40%">Total Posts Published</td>
@@ -72,6 +74,16 @@
 		<td>
             {{ $recapWordCount | lang.NumFmt 0 }}{{ if gt $recapWordCount 60 }} (that's almost {{ (div $recapWordCount 60) | lang.NumFmt 0 }} tweets){{ end }}
             <span style="color: {{ $wordTrendColor }};">{{ $wordTrend }}</span></td>
+        </td>
+	</tr>
+    <tr>
+		<td>Top Categories</td>
+		<td>
+            {{ range $categories }}
+            <ul>
+                <li>{{ .Page.Title }}: {{ len .Pages }} posts</li>
+            </ul>
+            {{ end }}
         </td>
 	</tr>
     <tr>
