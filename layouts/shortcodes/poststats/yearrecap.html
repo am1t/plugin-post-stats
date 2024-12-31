@@ -41,7 +41,7 @@
 	{{ end }}
 
     {{ range .Params.categories }}
-        {{ $count := or ($categoryCounts.Get .) 0 }}
+        {{ $count := or ($categoryCounts .) 0 }}
         {{ $categoryCounts = $categoryCounts | merge (dict . (add $count 1)) }}
     {{ end }}
 {{ end }}
