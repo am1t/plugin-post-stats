@@ -99,6 +99,10 @@
 
 {{ $chartData := printf "%s" $chartPost | printf "%s%s" $chartYearCount | printf "%s%s" $chartMid | printf "%s%s" $chartYearKeys | printf "%s%s" $chartPre | printf "%s" }}
 
+{{ if .Site.Params.disable_year_recap }}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.0.1/dist/chart.umd.js"></script>
+{{ end }}
+
 <script type="text/javascript">
     var ctx = document.getElementById('yearchart').getContext('2d');
     var options = {{ $chartData | safeJS }};
