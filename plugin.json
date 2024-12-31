@@ -5,5 +5,12 @@
     "includes": [
         "/assets/css/poststats.css",
         "/assets/js/poststats.js"
-    ]
+    ],
+    "fields": [
+		{
+			"field": "params.disable_year_recap",
+			"label": "Remove Year Recap section from the stats page",
+			"type": "boolean"
+		}
+	]
   }
