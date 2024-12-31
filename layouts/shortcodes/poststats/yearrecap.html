@@ -62,7 +62,7 @@
   {{ $wordTrendColor = "gray" }}
 {{ end }}
 
-{{ $categories := .Params.categories | sort "len" "desc" | first 3 }}
+{{ $categories := .Site.Taxonomies.categories | sort "len" "desc" | first 3 }}
 
 <table class="post-stats-tbl">
     <tr>
