@@ -30,27 +30,13 @@
 
 {{ $recapScratch := newScratch }}
 {{ $recapScratch.Set "longCount" 0 }}
-
-{{ $categoryCounts := dict }}
-
 {{ range $recapPosts }}
     {{ $recapScratch.Add "wordcount" .WordCount }}
 	{{ if ge .WordCount ($recapScratch.Get "longCount") }}
 		{{ $recapScratch.Set "longestPost" . }}
 		{{ $recapScratch.Set "longCount" .WordCount }}
 	{{ end }}
-
-    {{ range .Params.categories }}
-        {{ $count := or ($categoryCounts .) 0 }}
-        {{ $categoryCounts = $categoryCounts | merge (dict . (add $count 1)) }}
-    {{ end }}
 {{ end }}
-
-{{ $sortedCategories := slice }}
-{{ range $key, $value := $categoryCounts }}
-  {{ $sortedCategories = $sortedCategories | append (dict "name" $key "count" $value) }}
-{{ end }}
-{{ $sortedCategories = sort $sortedCategories "count" "desc" }}
 
 {{ range $postsLastYear }}
     {{ $recapScratch.Add "previouswordcount" .WordCount }}
@@ -86,16 +72,6 @@
 		<td>
             {{ $recapWordCount | lang.NumFmt 0 }}{{ if gt $recapWordCount 60 }} (that's almost {{ (div $recapWordCount 60) | lang.NumFmt 0 }} tweets){{ end }}
             <span style="color: {{ $wordTrendColor }};">{{ $wordTrend }}</span></td>
-        </td>
-	</tr>
-    <tr>
-		<td>Top Categories</td>
-		<td>
-            {{ range first 3 $sortedCategories }}
-            <ul>
-                <li>{{ .name }}: {{ .count }} posts</li>
-            </ul>
-            {{ end }}
         </td>
 	</tr>
     <tr>
