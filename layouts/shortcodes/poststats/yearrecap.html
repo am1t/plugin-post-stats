@@ -26,7 +26,7 @@
 
 {{ $recapTitled := len ( where $recapPosts ".Params.title"  "!=" nil ) }}
 {{ $recapMicro := len ( where $recapPosts ".Params.title"  "=" nil ) }}
-{{ $postsWithImages := len ( where $recapPosts ".Params.images" "!=" "" ) }}
+{{ $postsWithImages := len ( where $recapPosts ".Params.images" "!=" nil ) }}
 
 {{ $recapScratch := newScratch }}
 {{ $recapScratch.Set "longCount" 0 }}
