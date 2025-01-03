@@ -38,6 +38,7 @@
         {{ end }}
     {{ end }}
 
+    {{ $recapScratch.Set "previouswordcount" 0 }}
     {{ range $postsLastYear }}
         {{ $recapScratch.Add "previouswordcount" .WordCount }}
     {{ end }}
