@@ -46,7 +46,10 @@
     {{ $recapPostCount :=  len ($recapPosts) }}
     {{ $recapWordCount := $recapScratch.Get "wordcount" }}
     {{ $previousWordCount := $recapScratch.Get "previouswordcount" }}
-    {{ $recapAvgPostLength := div $recapWordCount $recapPostCount }}
+    {{ $recapAvgPostLength := 0 }}
+    {{ if gt $recapPostCount 0 }}
+        {{ $recapAvgPostLength = div $recapWordCount $recapPostCount }}
+    {{ end }}
 
     {{ $wordChange := sub $recapWordCount $previousWordCount }}
     {{ $wordTrend := "" }}

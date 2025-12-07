@@ -15,7 +15,10 @@
 
 {{ $postCount :=  len ($posts) }}
 {{ $wordCount := $scratch.Get "wordcount" }}
-{{ $avgPostLength := div $wordCount $postCount }}
+{{ $avgPostLength := 0 }}
+{{ if gt $postCount 0 }}
+    {{ $avgPostLength = div $wordCount $postCount }}
+{{ end }}
 <table class="post-stats-tbl">
     <tr>
         <td width="40%">Total Posts Published</td>
@@ -118,12 +121,18 @@
       {{ $max := add (len (index $.Site.Taxonomies.categories.ByCount 0).Pages) 1 }}
       {{ $min := len (index $.Site.Taxonomies.categories.ByCount.Reverse 0).Pages }}
       {{ $spread := sub $max $min }}
-      {{ $fontStep := div $fontSpread $spread }}
+      {{ $fontStep := 0 }}
+      {{ if gt $spread 0 }}
+        {{ $fontStep = div $fontSpread $spread }}
+      {{ end }}
         {{ range $name, $taxonomy := $.Site.Taxonomies.categories }}
           {{ $categoryCount := len $taxonomy.Pages }}
-          {{ $currentFontSize := (add $smallestFontSize (mul (sub $categoryCount $min) $fontStep) ) }}
-          {{ $weigth := div (sub (math.Log $categoryCount) (math.Log $min)) (sub (math.Log $max) (math.Log $min)) }}
-          {{ $currentFontSize := (add $smallestFontSize (mul (sub $largestFontSize $smallestFontSize) $weigth)) }}
+          {{ $currentFontSize := $smallestFontSize }}
+          {{ if gt $spread 0 }}
+            {{ $currentFontSize = (add $smallestFontSize (mul (sub $categoryCount $min) $fontStep) ) }}
+            {{ $weigth := div (sub (math.Log $categoryCount) (math.Log $min)) (sub (math.Log $max) (math.Log $min)) }}
+            {{ $currentFontSize = (add $smallestFontSize (mul (sub $largestFontSize $smallestFontSize) $weigth)) }}
+          {{ end }}
             <a href="{{ "/categories/" | relURL }}{{ $name | urlize }}" 
             class="categorycloud-item" style="font-size: {{ $currentFontSize }}rem;">
               {{ $name }}<sup>{{ $categoryCount }}</sup>

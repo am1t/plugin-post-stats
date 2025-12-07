@@ -29,6 +29,9 @@ There is no configuration as of now to not show the new page in the Menu. Howeve
 
 ### Change Log
 
+**Version 1.2:** Released 7th December, 2025
+- Fixed issue there are no published post
+
 **Version 1.2:** Released 30th December, 2024
 - Added Year recap section for year end summary
 
