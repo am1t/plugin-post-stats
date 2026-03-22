@@ -3,11 +3,9 @@
     {{ $recapYear := cond (gt $now.Month 11) $now.Year (sub $now.Year 1) }}
     {{ $lastYear := sub $recapYear 1 }}
 
-    {{ $recapPosts := where .Site.RegularPages "Type" "post" }}
-    {{ $postsLastYear := where .Site.RegularPages "Type" "post" }}
-
-    {{ $recapPosts := where $recapPosts "Date.Year" $recapYear }}
-    {{ $postsLastYear := where $postsLastYear "Date.Year" $lastYear }}
+    {{ $allPosts := where .Site.RegularPages "Type" "post" }}
+    {{ $recapPosts := where $allPosts "Date.Year" $recapYear }}
+    {{ $postsLastYear := where $allPosts "Date.Year" $lastYear }}
 
     {{ $postsChange := sub (len $recapPosts) (len $postsLastYear) }}
     {{ $arrow := "" }}
@@ -30,6 +28,7 @@
 
     {{ $recapScratch := newScratch }}
     {{ $recapScratch.Set "longCount" 0 }}
+    {{ $recapScratch.Set "wordcount" 0 }}
     {{ range $recapPosts }}
         {{ $recapScratch.Add "wordcount" .WordCount }}
         {{ if ge .WordCount ($recapScratch.Get "longCount") }}
@@ -44,8 +43,8 @@
     {{ end }}
 
     {{ $recapPostCount :=  len ($recapPosts) }}
-    {{ $recapWordCount := $recapScratch.Get "wordcount" }}
-    {{ $previousWordCount := $recapScratch.Get "previouswordcount" }}
+    {{ $recapWordCount := int ($recapScratch.Get "wordcount") }}
+    {{ $previousWordCount := int ($recapScratch.Get "previouswordcount") }}
     {{ $recapAvgPostLength := 0 }}
     {{ if gt $recapPostCount 0 }}
         {{ $recapAvgPostLength = div $recapWordCount $recapPostCount }}

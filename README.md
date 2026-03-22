@@ -29,7 +29,12 @@ There is no configuration as of now to not show the new page in the Menu. Howeve
 
 ### Change Log
 
-**Version 1.2:** Released 7th December, 2025
+**Version 1.2.5:** Released 22nd March, 2026
+- Fixed word count crash in year recap when there are no posts for the recap year
+- Fixed "since" date not updating dynamically in stats summary
+- Minor performance improvement in year recap
+
+**Version 1.2.4:** Released 7th December, 2025
 - Fixed issue there are no published post
 
 **Version 1.2:** Released 30th December, 2024

@@ -8,7 +8,7 @@
 {{ end }}
 
 {{ range last 1 $posts }}
-    {{ $since := .Date.Format "January, 2006" }}
+    {{ $since = .Date.Format "January, 2006" }}
 {{ end }}
 
 {{ $postCount :=  len ($posts) }}
