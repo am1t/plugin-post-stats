@@ -5,6 +5,7 @@
 
 {{ $scratch := newScratch }}
 {{ $scratch.Set "longCount" 0 }}
+{{ $scratch.Set "wordcount" 0 }}
 {{ range $posts }}
     {{ $scratch.Add "wordcount" .WordCount }}
 	{{ if ge .WordCount ($scratch.Get "longCount") }}
@@ -14,7 +15,7 @@
 {{ end }}
 
 {{ $postCount :=  len ($posts) }}
-{{ $wordCount := $scratch.Get "wordcount" }}
+{{ $wordCount := int ($scratch.Get "wordcount") }}
 {{ $avgPostLength := 0 }}
 {{ if gt $postCount 0 }}
     {{ $avgPostLength = div $wordCount $postCount }}

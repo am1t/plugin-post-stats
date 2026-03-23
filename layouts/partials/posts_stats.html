@@ -3,6 +3,7 @@
 {{ $posts := where site.RegularPages "Type" "post" }}
 
 {{ $scratch := newScratch }}
+{{ $scratch.Set "wordcount" 0 }}
 {{ range $posts }}
     {{ $scratch.Add "wordcount" .WordCount }}
 {{ end }}
@@ -12,7 +13,7 @@
 {{ end }}
 
 {{ $postCount :=  len ($posts) }}
-{{ $wordCount := $scratch.Get "wordcount" }}
+{{ $wordCount := int ($scratch.Get "wordcount") }}
 
 {{ if gt $wordCount 40000 }}
     {{ $novelCount := div $wordCount 40000 }}
