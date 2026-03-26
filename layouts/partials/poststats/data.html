@@ -1,0 +1,82 @@
+{{/*
+  Shared post data partial for mb-post-stats.
+  Computes all core metrics once and returns them as a dict.
+
+  Usage:
+    {{ $data := partial "poststats/data.html" . }}
+
+  Returns a dict with:
+    - posts         : all posts (RegularPages of type "post")
+    - postCount     : total number of posts
+    - wordCount     : total word count across all posts
+    - avgWordCount  : average words per post
+    - firstPost     : the earliest post (last in date-asc list)
+    - longestPost   : post with most words
+    - titledCount   : posts with a title
+    - microCount    : posts without a title
+    - byYear        : slice of dicts {key, count} newest-first
+    - byMonth       : map of year -> slice of dicts {key, count} newest-first
+*/}}
+
+{{ $posts := where site.RegularPages "Type" "post" }}
+
+{{/* Word count + longest post */}}
+{{ $scratch := newScratch }}
+{{ $scratch.Set "wordcount" 0 }}
+{{ $scratch.Set "longCount" 0 }}
+{{ range $posts }}
+    {{ $scratch.Add "wordcount" .WordCount }}
+    {{ if ge .WordCount ($scratch.Get "longCount") }}
+        {{ $scratch.Set "longestPost" . }}
+        {{ $scratch.Set "longCount" .WordCount }}
+    {{ end }}
+{{ end }}
+
+{{ $postCount    := len $posts }}
+{{ $wordCount    := int ($scratch.Get "wordcount") }}
+{{ $avgWordCount := 0 }}
+{{ if gt $postCount 0 }}
+    {{ $avgWordCount = div $wordCount $postCount }}
+{{ end }}
+
+{{ $firstPost    := "" }}
+{{ range last 1 $posts }}
+    {{ $firstPost = . }}
+{{ end }}
+
+{{ $longestPost  := $scratch.Get "longestPost" }}
+{{ $titledCount  := len (where $posts ".Params.title" "!=" nil) }}
+{{ $microCount   := len (where $posts ".Params.title" "=" nil) }}
+
+{{/* Posts by year */}}
+{{ $byYear := slice }}
+{{ range ($posts.GroupByDate "2006").Reverse }}
+    {{ $yearCount := len (where .Pages "Type" "post") }}
+    {{ $byYear = $byYear | append (dict "key" .Key "count" $yearCount) }}
+{{ end }}
+
+{{/* Posts by month per year — map[year -> slice of {key, count}] */}}
+{{ $byMonth := dict }}
+{{ range ($posts.GroupByDate "2006").Reverse }}
+    {{ $year := .Key }}
+    {{ $yearPosts := where .Pages "Type" "post" }}
+    {{ $months := slice }}
+    {{ range ($yearPosts.GroupByDate "January").Reverse }}
+        {{ $monthCount := len (where .Pages "Type" "post") }}
+        {{ $months = $months | append (dict "key" .Key "count" $monthCount) }}
+    {{ end }}
+    {{ $byMonth = merge $byMonth (dict $year $months) }}
+{{ end }}
+
+{{ return dict
+    "posts"       $posts
+    "postCount"   $postCount
+    "wordCount"   $wordCount
+    "avgWordCount" $avgWordCount
+    "firstPost"   $firstPost
+    "longestPost" $longestPost
+    "titledCount" $titledCount
+    "microCount"  $microCount
+    "byYear"      $byYear
+    "byMonth"     $byMonth
+}}
