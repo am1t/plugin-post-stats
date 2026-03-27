@@ -5,6 +5,29 @@
 
 <div class="ps-stats">
 
+  {{/* ── All-time header (shown only when yearrecap is disabled) ── */}}
+  {{ if $.Site.Params.disable_year_recap }}
+  <div class="ps-recap ps-recap--header">
+    <div class="ps-recap__year">All-time Stats</div>
+    <div class="ps-recap__row">
+      <div class="ps-recap__stat">
+        <span class="ps-recap__stat-value">{{ $d.postCount | lang.NumFmt 0 }}</span>
+        <span class="ps-recap__stat-label">Total Posts</span>
+      </div>
+      <div class="ps-recap__stat">
+        <span class="ps-recap__stat-value">{{ $d.wordCount | lang.NumFmt 0 }}</span>
+        <span class="ps-recap__stat-label">Words Written</span>
+      </div>
+      {{ with $d.firstPost }}
+      <div class="ps-recap__stat">
+        <span class="ps-recap__stat-value">{{ .Date.Format "Jan 2006" }}</span>
+        <span class="ps-recap__stat-label">Blogging Since</span>
+      </div>
+      {{ end }}
+    </div>
+  </div>
+  {{ end }}
+
   {{/* ── Key Metrics ── */}}
   <div class="ps-hero">
 
