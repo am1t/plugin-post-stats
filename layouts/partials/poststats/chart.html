@@ -1,0 +1,49 @@
+{{/*
+  Renders a Chart.js chart.
+  Params:
+    - chartId    (string)  : canvas element ID
+    - chartType  (string)  : chart type, e.g. "line", "bar" (default: "line")
+    - labels     (slice)   : x-axis labels
+    - data       (slice)   : y-axis values
+    - label      (string)  : dataset label
+    - includeCDN (bool)    : whether to emit the Chart.js <script src>
+*/}}
+{{ $chartId   := .chartId }}
+{{ $chartType := default "line" .chartType }}
+{{ $labels    := .labels }}
+{{ $data      := .data }}
+{{ $label     := default "Posts Published" .label }}
+{{ $cdn       := .includeCDN }}
+
+<div style="width: 100%;height: 300px;margin: 30px auto">
+    <canvas id="{{ $chartId }}"></canvas>
+</div>
+
+{{ if $cdn }}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.0.1/dist/chart.umd.js"></script>
+{{ end }}
+
+<script type="text/javascript">
+(function() {
+    var ctx = document.getElementById({{ $chartId | jsonify }}).getContext('2d');
+    new Chart(ctx, {
+        type: {{ $chartType | jsonify }},
+        data: {
+            labels: {{ $labels | jsonify }},
+            datasets: [{
+                label: {{ $label | jsonify }},
+                data: {{ $data | jsonify }},
+                backgroundColor: 'rgb(54, 162, 235)',
+                borderColor: 'rgb(54, 162, 235)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            scales: {
+                yAxes: [{ ticks: { beginAtZero: true } }]
+            }
+        }
+    });
+})();
+</script>
