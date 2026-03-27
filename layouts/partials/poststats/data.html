@@ -178,7 +178,7 @@
     {{ $prevDay  := div (time (index $seenDays 0)).Unix 86400 }}
 
     {{ range $i, $dayStr := $seenDays }}
-        {{ if eq $i 0 }}{{ continue }}{{ end }}
+        {{ if gt $i 0 }}
         {{ $curDay := div (time $dayStr).Unix 86400 }}
         {{ if eq $curDay (add $prevDay 1) }}
             {{ $runLen = add $runLen 1 }}
@@ -192,6 +192,7 @@
             {{ $runStart = $dayStr }}
         {{ end }}
         {{ $prevDay = $curDay }}
+        {{ end }}
     {{ end }}
     {{/* Flush last run */}}
     {{ if gt $runLen $longestStreak }}
@@ -200,25 +201,30 @@
         {{ $longestStreakEnd   = index $seenDays (sub (len $seenDays) 1) }}
     {{ end }}
 
-    {{/* 2. Current streak: walk backward from today (or yesterday) */}}
-    {{ $todayDay  := div now.Unix 86400 }}
-    {{ $lastDay   := div (time (index $seenDays (sub (len $seenDays) 1))).Unix 86400 }}
+    {{/* 2. Current streak: walk backward through reversed unique days */}}
+    {{ $todayDay     := div now.Unix 86400 }}
+    {{ $seenDaysRev  := slice }}
+    {{ range $seenDays }}{{ $seenDaysRev = prepend $seenDaysRev . }}{{ end }}
+    {{ $lastDay := div (time (index $seenDaysRev 0)).Unix 86400 }}
     {{/* Only count if last post was today or yesterday */}}
     {{ if or (eq $lastDay $todayDay) (eq $lastDay (sub $todayDay 1)) }}
         {{ $cs       := 1 }}
         {{ $expected := sub $lastDay 1 }}
-        {{ range seq (sub (len $seenDays) 2) 0 -1 }}
-            {{ $dayFloor := div (time (index $seenDays .)).Unix 86400 }}
-            {{ if eq $dayFloor $expected }}
-                {{ $cs       = add $cs 1 }}
-                {{ $expected = sub $expected 1 }}
-            {{ else }}
-                {{ break }}
+        {{ $broken   := false }}
+        {{ range $i, $dayStr := $seenDaysRev }}
+            {{ if and (gt $i 0) (not $broken) }}
+                {{ $dayFloor := div (time $dayStr).Unix 86400 }}
+                {{ if eq $dayFloor $expected }}
+                    {{ $cs       = add $cs 1 }}
+                    {{ $expected = sub $expected 1 }}
+                {{ else }}
+                    {{ $broken = true }}
+                {{ end }}
             {{ end }}
         {{ end }}
-        {{ $currentStreak      = $cs }}
-        {{ $csStartIdx         := sub (len $seenDays) $cs }}
-        {{ $currentStreakStart  = index $seenDays $csStartIdx }}
+        {{ $currentStreak     = $cs }}
+        {{ $csStartIdx        := sub (len $seenDays) $cs }}
+        {{ $currentStreakStart = index $seenDays $csStartIdx }}
     {{ end }}
 
 {{ end }}
