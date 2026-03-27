@@ -1,0 +1,331 @@
+<!-- mb-post-stats v2.0 -->
+{{ $d := partial "poststats/data.html" . }}
+{{/* Load Chart.js CDN here only if yearrecap is disabled (otherwise yearrecap loads it) */}}
+{{ $loadCDN := $.Site.Params.disable_year_recap | default false }}
+
+<div class="ps-stats">
+
+  {{/* ── All-time header (shown only when yearrecap is disabled) ── */}}
+  {{ if $.Site.Params.disable_year_recap }}
+  <div class="ps-recap ps-recap--header">
+    <div class="ps-recap__year">All-time Stats</div>
+    <div class="ps-recap__row">
+      <div class="ps-recap__stat">
+        <span class="ps-recap__stat-value">{{ $d.postCount | lang.NumFmt 0 }}</span>
+        <span class="ps-recap__stat-label">Total Posts</span>
+      </div>
+      <div class="ps-recap__stat">
+        <span class="ps-recap__stat-value">{{ $d.wordCount | lang.NumFmt 0 }}</span>
+        <span class="ps-recap__stat-label">Words Written</span>
+      </div>
+      {{ with $d.firstPost }}
+      <div class="ps-recap__stat">
+        <span class="ps-recap__stat-value">{{ .Date.Format "Jan 2006" }}</span>
+        <span class="ps-recap__stat-label">Blogging Since</span>
+      </div>
+      {{ end }}
+    </div>
+  </div>
+  {{ end }}
+
+  {{/* ── Key Metrics ── */}}
+  <div class="ps-hero">
+
+    {{/* Row 1: post counts */}}
+    <div class="ps-hero__row">
+      <div class="ps-card">
+        <span class="ps-card__value">{{ $d.postCount | lang.NumFmt 0 }}</span>
+        <span class="ps-card__label">Total Posts</span>
+      </div>
+      <div class="ps-card">
+        <span class="ps-card__value">{{ $d.titledCount | lang.NumFmt 0 }}</span>
+        <span class="ps-card__label">Titled Posts</span>
+      </div>
+      <div class="ps-card">
+        <span class="ps-card__value">{{ $d.microCount | lang.NumFmt 0 }}</span>
+        <span class="ps-card__label">Micro Posts</span>
+      </div>
+    </div>
+
+    {{/* Row 2: word counts */}}
+    <div class="ps-hero__row">
+      <div class="ps-card">
+        <span class="ps-card__value">{{ $d.wordCount | lang.NumFmt 0 }}</span>
+        <span class="ps-card__label">Total Words</span>
+      </div>
+      <div class="ps-card">
+        <span class="ps-card__value">{{ $d.avgWordCount | lang.NumFmt 0 }}</span>
+        <span class="ps-card__label">Avg Words / Post</span>
+      </div>
+      {{ if gt $d.novellaCount 0 }}
+      <div class="ps-card">
+        <span class="ps-card__value">~{{ $d.novellaCount }} novellas</span>
+        <span class="ps-card__label">Equivalent Length</span>
+      </div>
+      {{ end }}
+    </div>
+
+  </div>
+
+  {{/* ── Post Spotlights ── */}}
+  <div class="ps-spotlight">
+    <div class="ps-spotlight-card">
+      <span class="ps-spotlight-card__label">First Post</span>
+      {{ with $d.firstPost }}
+        <span class="ps-spotlight-card__title">
+          {{ if .Title }}<a href="{{ .Permalink }}">{{ .Title }}</a>
+          {{ else }}<a href="{{ .Permalink }}">Micro post</a>{{ end }}
+        </span>
+        <span class="ps-spotlight-card__meta">{{ .Date.Format "Jan 2, 2006" }}</span>
+      {{ end }}
+    </div>
+    <div class="ps-spotlight-card">
+      <span class="ps-spotlight-card__label">Longest Post</span>
+      {{ with $d.longestPost }}
+        <span class="ps-spotlight-card__title">
+          {{ if .Title }}<a href="{{ .Permalink }}">{{ .Title }}</a>
+          {{ else }}<a href="{{ .Permalink }}">Micro post</a>{{ end }}
+        </span>
+        <span class="ps-spotlight-card__meta">{{ .WordCount | lang.NumFmt 0 }} words</span>
+      {{ end }}
+    </div>
+  </div>
+
+  {{/* ── Reading Time ── */}}
+  <div class="ps-section">
+    <div class="ps-section__header">
+      <h3 class="ps-section__title">Reading Time</h3>
+    </div>
+    <div class="ps-stat-row">
+      <div class="ps-stat-card">
+        <div class="ps-stat-card__value">
+          {{ if ge $d.totalReadingTime 60 }}{{ div $d.totalReadingTime 60 }} hrs
+          {{ else }}{{ $d.totalReadingTime }} min{{ end }}
+        </div>
+        <div class="ps-stat-card__label">Total Reading Time</div>
+      </div>
+      <div class="ps-stat-card">
+        <div class="ps-stat-card__value">
+          {{ if eq $d.avgReadingTime 0 }}&lt;1 min
+          {{ else }}~{{ $d.avgReadingTime }} min{{ end }}
+        </div>
+        <div class="ps-stat-card__label">Avg per Post</div>
+      </div>
+      {{ with $d.longestReadingPost }}
+      <div class="ps-stat-card">
+        <div class="ps-stat-card__value">{{ .ReadingTime }} min</div>
+        <div class="ps-stat-card__label">Longest Read</div>
+      </div>
+      {{ end }}
+      {{ with $d.shortestReadingPost }}
+      <div class="ps-stat-card">
+        <div class="ps-stat-card__value">
+          {{ if eq .ReadingTime 0 }}&lt;1 min{{ else }}{{ .ReadingTime }} min{{ end }}
+        </div>
+        <div class="ps-stat-card__label">Shortest Read</div>
+      </div>
+      {{ end }}
+    </div>
+  </div>
+
+  {{/* ── Posting Streak ── */}}
+  {{ if gt $d.longestStreak 0 }}
+  <div class="ps-section">
+    <div class="ps-section__header">
+      <h3 class="ps-section__title">Posting Streak</h3>
+    </div>
+    <div class="ps-streak-grid">
+      {{ if gt $d.currentStreak 0 }}
+      <div class="ps-streak-card ps-streak-card--current">
+        <div class="ps-streak-card__days">{{ $d.currentStreak }}</div>
+        <div class="ps-streak-card__label">Current Streak</div>
+        <div class="ps-streak-card__range">
+          {{ (time $d.currentStreakStart).Format "Jan 2" }} – {{ now.Format "Jan 2, 2006" }}
+        </div>
+      </div>
+      {{ else }}
+      <div class="ps-streak-card ps-streak-card--inactive">
+        <div class="ps-streak-card__days">0</div>
+        <div class="ps-streak-card__label">Current Streak</div>
+        <div class="ps-streak-card__range">No posts today or yesterday</div>
+      </div>
+      {{ end }}
+      <div class="ps-streak-card">
+        <div class="ps-streak-card__days">{{ $d.longestStreak }}</div>
+        <div class="ps-streak-card__label">Longest Streak</div>
+        <div class="ps-streak-card__range">
+          {{ (time $d.longestStreakStart).Format "Jan 2" }} – {{ (time $d.longestStreakEnd).Format "Jan 2, 2006" }}
+        </div>
+      </div>
+    </div>
+  </div>
+  {{ end }}
+
+  {{/* ── Posts Per Year ── */}}
+  {{ $yearKeys   := slice }}
+  {{ $yearCounts := slice }}
+  {{ range $d.byYear }}
+      {{ $yearKeys   = $yearKeys   | append .key }}
+      {{ $yearCounts = $yearCounts | append .count }}
+  {{ end }}
+
+  <div class="ps-section">
+    <div class="ps-section__header">
+      <h3 class="ps-section__title">Posts Per Year</h3>
+    </div>
+    {{ partial "poststats/chart.html" (dict
+        "chartId"    "yearchart"
+        "chartType"  "bar"
+        "labels"     $yearKeys
+        "data"       $yearCounts
+        "includeCDN" $loadCDN
+    ) }}
+    <button class="ps-toggle" id="toggleYearTable" aria-expanded="false">
+      <span>Show data table</span>
+      <i class="ps-toggle__icon">▼</i>
+    </button>
+    <div class="ps-table-wrap ps-table-wrap--collapsed" id="yearTableWrap">
+      <table class="ps-table">
+        <thead><tr><th>Year</th><th>Posts</th></tr></thead>
+        <tbody>
+          {{ range $d.byYearDesc }}
+          <tr><td>{{ .key }}</td><td>{{ .count | lang.NumFmt 0 }}</td></tr>
+          {{ end }}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {{/* ── Publishing Patterns ── */}}
+  {{ $monKeys   := slice }}
+  {{ $monCounts := slice }}
+  {{ range $d.byMonthAllTime }}
+      {{ $monKeys   = $monKeys   | append .key }}
+      {{ $monCounts = $monCounts | append .count }}
+  {{ end }}
+
+  {{ $dowKeys   := slice }}
+  {{ $dowCounts := slice }}
+  {{ range $d.byDayOfWeek }}
+      {{ $dowKeys   = $dowKeys   | append .key }}
+      {{ $dowCounts = $dowCounts | append .count }}
+  {{ end }}
+
+  <div class="ps-section">
+    <div class="ps-section__header">
+      <h3 class="ps-section__title">Publishing Patterns</h3>
+      <span class="ps-section__meta">All-time</span>
+    </div>
+    <div class="ps-charts-row">
+      <div>
+        <div class="ps-chart-sublabel">By Month</div>
+        {{ partial "poststats/chart.html" (dict
+            "chartId"   "monthchart"
+            "chartType" "bar"
+            "labels"    $monKeys
+            "data"      $monCounts
+            "short"     true
+        ) }}
+      </div>
+      <div>
+        <div class="ps-chart-sublabel">By Day of Week</div>
+        {{ partial "poststats/chart.html" (dict
+            "chartId"   "dowchart"
+            "chartType" "bar"
+            "labels"    $dowKeys
+            "data"      $dowCounts
+            "short"     true
+        ) }}
+      </div>
+    </div>
+  </div>
+
+  {{/* ── Word Count Over Time ── */}}
+  {{ $wordYearKeys   := slice }}
+  {{ $wordYearCounts := slice }}
+  {{ range $d.wordsByYear }}
+      {{ $wordYearKeys   = $wordYearKeys   | append .key }}
+      {{ $wordYearCounts = $wordYearCounts | append .words }}
+  {{ end }}
+
+  <div class="ps-section">
+    <div class="ps-section__header">
+      <h3 class="ps-section__title">Word Count Over Time</h3>
+      <span class="ps-section__meta">Cumulative</span>
+    </div>
+    {{ partial "poststats/chart.html" (dict
+        "chartId"   "wordchart"
+        "chartType" "line"
+        "labels"    $wordYearKeys
+        "data"      $wordYearCounts
+    ) }}
+  </div>
+
+  {{/* ── Image Usage ── */}}
+  {{ if gt $d.imageCount 0 }}
+  <div class="ps-section">
+    <div class="ps-section__header">
+      <h3 class="ps-section__title">Image Usage</h3>
+    </div>
+    <div class="ps-stat-row">
+      <div class="ps-stat-card">
+        <div class="ps-stat-card__value">{{ $d.imageCount | lang.NumFmt 0 }}</div>
+        <div class="ps-stat-card__label">Posts with Images</div>
+      </div>
+      <div class="ps-stat-card">
+        <div class="ps-stat-card__value">
+          {{ if gt $d.postCount 0 }}{{ mul (div (float $d.imageCount) (float $d.postCount)) 100 | lang.NumFmt 0 }}%{{ end }}
+        </div>
+        <div class="ps-stat-card__label">Of All Posts</div>
+      </div>
+    </div>
+  </div>
+  {{ end }}
+
+  {{/* ── Category Cloud ── */}}
+  {{ $allCats := $.Site.Taxonomies.categories.ByCount }}
+  {{ if ne (len $allCats) 0 }}
+  {{ $cats := first 50 $allCats }}
+  <div class="ps-section">
+    <div class="ps-section__header">
+      <h3 class="ps-section__title">Categories</h3>
+      {{ if gt (len $allCats) 50 }}
+      <span class="ps-section__meta">Top 50 of {{ len $allCats }}</span>
+      {{ end }}
+    </div>
+    <div class="ps-cloud">
+      {{ $largestFontSize  := 1.4 }}
+      {{ $smallestFontSize := 1.0 }}
+      {{ $max    := add (len (index $cats 0).Pages) 1 }}
+      {{ $min    := len (index $cats (sub (len $cats) 1)).Pages }}
+      {{ $spread := sub $max $min }}
+      {{ range $cats }}
+        {{ $categoryCount := len .Pages }}
+        {{ $currentFontSize := $smallestFontSize }}
+        {{ if gt $spread 0 }}
+          {{ $weight := div (sub (math.Log $categoryCount) (math.Log $min)) (sub (math.Log $max) (math.Log $min)) }}
+          {{ $currentFontSize = add $smallestFontSize (mul (sub $largestFontSize $smallestFontSize) $weight) }}
+        {{ end }}
+        <a href="{{ "/categories/" | relURL }}{{ .Page.Title | urlize }}"
+           class="ps-cloud__item" style="font-size: {{ $currentFontSize }}rem;">
+          {{ .Page.Title }}<sup>{{ $categoryCount }}</sup>
+        </a>
+      {{ end }}
+    </div>
+  </div>
+  {{ end }}
+
+</div>
+
+<script>
+(function() {
+  var btn  = document.getElementById('toggleYearTable');
+  var wrap = document.getElementById('yearTableWrap');
+  if (!btn || !wrap) return;
+  btn.addEventListener('click', function() {
+    var collapsed = wrap.classList.toggle('ps-table-wrap--collapsed');
+    btn.setAttribute('aria-expanded', String(!collapsed));
+    btn.querySelector('span').textContent = collapsed ? 'Show data table' : 'Hide data table';
+  });
+})();
+</script>

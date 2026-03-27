@@ -1,0 +1,68 @@
+{{/*
+  Renders a Chart.js chart.
+  Params:
+    - chartId    (string)  : canvas element ID
+    - chartType  (string)  : chart type, e.g. "line", "bar" (default: "line")
+    - labels     (slice)   : x-axis labels
+    - data       (slice)   : y-axis values
+    - label      (string)  : dataset label
+    - includeCDN (bool)    : whether to emit the Chart.js <script src>
+    - short      (bool)    : use ps-chart-wrap--short (180px) instead of full height
+*/}}
+{{ $chartId   := .chartId }}
+{{ $chartType := default "line" .chartType }}
+{{ $labels    := .labels }}
+{{ $data      := .data }}
+{{ $label     := default "Posts Published" .label }}
+{{ $cdn       := .includeCDN }}
+{{ $short     := .short }}
+
+<div class="{{ if $short }}ps-chart-wrap ps-chart-wrap--short{{ else }}ps-chart-wrap{{ end }}" style="width:100%;height:{{ if $short }}180px{{ else }}300px{{ end }};margin:30px auto">
+    <canvas id="{{ $chartId }}"></canvas>
+</div>
+
+{{ if $cdn }}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{{ end }}
+
+<script>
+(function() {
+    var style      = getComputedStyle(document.documentElement);
+    var accent      = style.getPropertyValue('--ps-accent').trim()       || '#3b82f6';
+    var accentLight = style.getPropertyValue('--ps-accent-light').trim() || 'rgba(59,130,246,0.12)';
+    var gridColor   = 'rgba(128,128,128,0.1)';
+
+    var isLine = {{ eq $chartType "line" | jsonify | safeJS }};
+    var ctx = document.getElementById({{ $chartId | jsonify | safeJS }}).getContext('2d');
+    new Chart(ctx, {
+        type: {{ $chartType | jsonify | safeJS }},
+        data: {
+            labels: {{ $labels | jsonify | safeJS }},
+            datasets: [{
+                label: {{ $label | jsonify | safeJS }},
+                data: {{ $data | jsonify | safeJS }},
+                backgroundColor: accentLight,
+                borderColor: accent,
+                borderWidth: 1.5,
+                borderRadius: 4,
+                fill: isLine,
+                tension: 0.4,
+                pointBackgroundColor: accent,
+                pointRadius: isLine ? 4 : 0
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+                y: {
+                    beginAtZero: true,
+                    grid: { color: gridColor },
+                    ticks: { font: { size: 11 } }
+                }
+            }
+        }
+    });
+})();
+</script>

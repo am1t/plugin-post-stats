@@ -1,0 +1,257 @@
+{{/*
+  Shared post data partial for mb-post-stats.
+  Computes all core metrics once and returns them as a dict.
+
+  Usage:
+    {{ $data := partial "poststats/data.html" . }}
+
+  Returns a dict with:
+    - posts               : all posts (RegularPages of type "post")
+    - postCount           : total number of posts
+    - wordCount           : total word count across all posts
+    - avgWordCount        : average words per post
+    - novellaCount        : wordCount / 40000 (integer)
+    - firstPost           : the earliest post
+    - longestPost         : post with most words
+    - titledCount         : posts with a title
+    - microCount          : posts without a title
+    - totalReadingTime    : sum of .ReadingTime across all posts (minutes)
+    - avgReadingTime      : average .ReadingTime per post (minutes)
+    - longestReadingPost  : post with highest .ReadingTime
+    - shortestReadingPost : post with lowest .ReadingTime (WordCount > 0)
+    - imageCount          : posts with .Params.images set
+    - byYear              : slice of dicts {key, count} oldest-first (for chart)
+    - byYearDesc          : slice of dicts {key, count} newest-first (for table)
+    - byMonth             : map of year -> slice of dicts {key, count} newest-first
+    - byMonthAllTime      : slice of {key, count} Jan-Dec summed across all years
+    - byDayOfWeek         : slice of {key, count} Mon-Sun across all posts
+    - wordsByYear         : slice of {key, words} cumulative word count oldest-first
+    - currentStreak       : number of consecutive days posted up to today
+    - currentStreakStart  : start date (YYYY-MM-DD) of current streak
+    - longestStreak       : longest consecutive day posting streak (days)
+    - longestStreakStart  : start date (YYYY-MM-DD) of longest streak
+    - longestStreakEnd    : end date (YYYY-MM-DD) of longest streak
+*/}}
+
+{{ $posts := where site.RegularPages "Type" "post" }}
+
+{{/* Core counts */}}
+{{ $scratch := newScratch }}
+{{ $scratch.Set "wordcount" 0 }}
+{{ $scratch.Set "longCount" 0 }}
+{{ $scratch.Set "readingTime" 0 }}
+{{ $scratch.Set "shortReadCount" 99999 }}
+
+{{/* Day-of-week and month-all-time accumulators */}}
+{{ $dowMap := dict "Monday" 0 "Tuesday" 0 "Wednesday" 0 "Thursday" 0 "Friday" 0 "Saturday" 0 "Sunday" 0 }}
+{{ $momMap := dict "January" 0 "February" 0 "March" 0 "April" 0 "May" 0 "June" 0 "July" 0 "August" 0 "September" 0 "October" 0 "November" 0 "December" 0 }}
+
+{{ range $posts }}
+    {{/* Word count + longest post */}}
+    {{ $scratch.Add "wordcount" .WordCount }}
+    {{ if ge .WordCount ($scratch.Get "longCount") }}
+        {{ $scratch.Set "longestPost" . }}
+        {{ $scratch.Set "longCount" .WordCount }}
+    {{ end }}
+
+    {{/* Reading time */}}
+    {{ $scratch.Add "readingTime" .ReadingTime }}
+    {{ if ge .ReadingTime ($scratch.Get "longReadCount" | default 0) }}
+        {{ $scratch.Set "longestReadingPost" . }}
+        {{ $scratch.Set "longReadCount" .ReadingTime }}
+    {{ end }}
+    {{ if and (gt .WordCount 0) (lt .ReadingTime ($scratch.Get "shortReadCount")) }}
+        {{ $scratch.Set "shortestReadingPost" . }}
+        {{ $scratch.Set "shortReadCount" .ReadingTime }}
+    {{ end }}
+
+    {{/* Day of week */}}
+    {{ $dow := .Date.Format "Monday" }}
+    {{ $dowMap = merge $dowMap (dict $dow (add (index $dowMap $dow) 1)) }}
+
+    {{/* Month all-time */}}
+    {{ $mon := .Date.Format "January" }}
+    {{ $momMap = merge $momMap (dict $mon (add (index $momMap $mon) 1)) }}
+{{ end }}
+
+{{ $postCount    := len $posts }}
+{{ $wordCount    := int ($scratch.Get "wordcount") }}
+{{ $avgWordCount := 0 }}
+{{ $novellaCount := 0 }}
+{{ if gt $postCount 0 }}
+    {{ $avgWordCount = div $wordCount $postCount }}
+{{ end }}
+{{ if gt $wordCount 0 }}
+    {{ $novellaCount = div $wordCount 40000 }}
+{{ end }}
+
+{{ $firstPost := "" }}
+{{ range last 1 $posts }}
+    {{ $firstPost = . }}
+{{ end }}
+
+{{ $totalReadingTime := int ($scratch.Get "readingTime") }}
+{{ $avgReadingTime   := 0 }}
+{{ if gt $postCount 0 }}
+    {{ $avgReadingTime = div $totalReadingTime $postCount }}
+{{ end }}
+
+{{ $imageCount := len (where $posts ".Params.images" "!=" nil) }}
+
+{{/* Posts by year — oldest-first for chart, newest-first for table */}}
+{{ $byYear := slice }}
+{{ $byYearDesc := slice }}
+{{ range ($posts.GroupByDate "2006").Reverse }}
+    {{ $yearCount := len (where .Pages "Type" "post") }}
+    {{ $byYear = $byYear | append (dict "key" .Key "count" $yearCount) }}
+{{ end }}
+{{ range ($posts.GroupByDate "2006") }}
+    {{ $yearCount := len (where .Pages "Type" "post") }}
+    {{ $byYearDesc = $byYearDesc | append (dict "key" .Key "count" $yearCount) }}
+{{ end }}
+
+{{/* wordsByYear: oldest-first so cumulative sum builds correctly */}}
+{{ $wordsByYear := slice }}
+{{ $cumulativeWords := 0 }}
+{{ range ($posts.GroupByDate "2006").Reverse }}
+    {{ $yearPosts2 := where .Pages "Type" "post" }}
+    {{ $yearWords  := 0 }}
+    {{ range $yearPosts2 }}{{ $yearWords = add $yearWords .WordCount }}{{ end }}
+    {{ $cumulativeWords = add $cumulativeWords $yearWords }}
+    {{ $wordsByYear = $wordsByYear | append (dict "key" .Key "words" $cumulativeWords) }}
+{{ end }}
+
+{{/* Posts by month per year — map[year -> slice of {key, count}] */}}
+{{ $byMonth := dict }}
+{{ range ($posts.GroupByDate "2006").Reverse }}
+    {{ $year := .Key }}
+    {{ $yearPosts := where .Pages "Type" "post" }}
+    {{ $months := slice }}
+    {{ range ($yearPosts.GroupByDate "January").Reverse }}
+        {{ $monthCount := len (where .Pages "Type" "post") }}
+        {{ $months = $months | append (dict "key" .Key "count" $monthCount) }}
+    {{ end }}
+    {{ $byMonth = merge $byMonth (dict $year $months) }}
+{{ end }}
+
+{{/* Posts by month all-time (Jan–Dec ordered) */}}
+{{ $monthOrder := slice "January" "February" "March" "April" "May" "June" "July" "August" "September" "October" "November" "December" }}
+{{ $byMonthAllTime := slice }}
+{{ range $monthOrder }}
+    {{ $byMonthAllTime = $byMonthAllTime | append (dict "key" . "count" (index $momMap .)) }}
+{{ end }}
+
+{{/* Posts by day of week (Mon–Sun ordered) */}}
+{{ $dowOrder := slice "Monday" "Tuesday" "Wednesday" "Thursday" "Friday" "Saturday" "Sunday" }}
+{{ $byDayOfWeek := slice }}
+{{ range $dowOrder }}
+    {{ $byDayOfWeek = $byDayOfWeek | append (dict "key" . "count" (index $dowMap .)) }}
+{{ end }}
+
+{{/* ── Streak computation ──
+     Collect unique posting days (YYYY-MM-DD) oldest-first, then:
+     1. Walk forward to find longest streak + its date range.
+     2. Walk backward from today to find current streak + its start date.
+     Days are compared by floor(unix/86400) so timezone offsets don't matter.
+*/}}
+{{ $seenDays := slice }}
+{{ $daysSeen := dict }}
+{{ range $posts.ByDate }}
+    {{ $dayKey := .Date.Format "2006-01-02" }}
+    {{ if not (index $daysSeen $dayKey) }}
+        {{ $seenDays = $seenDays | append $dayKey }}
+        {{ $daysSeen = merge $daysSeen (dict $dayKey true) }}
+    {{ end }}
+{{ end }}
+
+{{ $currentStreak      := 0 }}
+{{ $currentStreakStart := "" }}
+{{ $longestStreak      := 0 }}
+{{ $longestStreakStart := "" }}
+{{ $longestStreakEnd   := "" }}
+
+{{ if gt (len $seenDays) 0 }}
+
+    {{/* 1. Longest streak: walk forward through sorted unique days */}}
+    {{ $runLen   := 1 }}
+    {{ $runStart := index $seenDays 0 }}
+    {{ $prevDay  := div (time (index $seenDays 0)).Unix 86400 }}
+
+    {{ range $i, $dayStr := $seenDays }}
+        {{ if gt $i 0 }}
+        {{ $curDay := div (time $dayStr).Unix 86400 }}
+        {{ if eq $curDay (add $prevDay 1) }}
+            {{ $runLen = add $runLen 1 }}
+        {{ else }}
+            {{ if gt $runLen $longestStreak }}
+                {{ $longestStreak     = $runLen }}
+                {{ $longestStreakStart = $runStart }}
+                {{ $longestStreakEnd   = index $seenDays (sub $i 1) }}
+            {{ end }}
+            {{ $runLen   = 1 }}
+            {{ $runStart = $dayStr }}
+        {{ end }}
+        {{ $prevDay = $curDay }}
+        {{ end }}
+    {{ end }}
+    {{/* Flush last run */}}
+    {{ if gt $runLen $longestStreak }}
+        {{ $longestStreak     = $runLen }}
+        {{ $longestStreakStart = $runStart }}
+        {{ $longestStreakEnd   = index $seenDays (sub (len $seenDays) 1) }}
+    {{ end }}
+
+    {{/* 2. Current streak: walk forward, reset on gap, result is the trailing run */}}
+    {{ $todayDay  := div now.Unix 86400 }}
+    {{ $lastIdx   := sub (len $seenDays) 1 }}
+    {{ $lastDay   := div (time (index $seenDays $lastIdx)).Unix 86400 }}
+    {{/* Only active if last post was today or yesterday */}}
+    {{ if or (eq $lastDay $todayDay) (eq $lastDay (sub $todayDay 1)) }}
+        {{ $cs      := 1 }}
+        {{ $csStart := index $seenDays 0 }}
+        {{ $prevD   := div (time (index $seenDays 0)).Unix 86400 }}
+        {{ range $i, $dayStr := $seenDays }}
+            {{ if gt $i 0 }}
+                {{ $curD := div (time $dayStr).Unix 86400 }}
+                {{ if eq $curD (add $prevD 1) }}
+                    {{ $cs = add $cs 1 }}
+                {{ else }}
+                    {{ $cs      = 1 }}
+                    {{ $csStart = $dayStr }}
+                {{ end }}
+                {{ $prevD = $curD }}
+            {{ end }}
+        {{ end }}
+        {{ $currentStreak     = $cs }}
+        {{ $currentStreakStart = $csStart }}
+    {{ end }}
+
+{{ end }}
+
+{{ return dict
+    "posts"               $posts
+    "postCount"           $postCount
+    "wordCount"           $wordCount
+    "avgWordCount"        $avgWordCount
+    "novellaCount"        $novellaCount
+    "firstPost"           $firstPost
+    "longestPost"         ($scratch.Get "longestPost")
+    "titledCount"         (len (where $posts ".Params.title" "!=" nil))
+    "microCount"          (len (where $posts ".Params.title" "=" nil))
+    "totalReadingTime"    $totalReadingTime
+    "avgReadingTime"      $avgReadingTime
+    "longestReadingPost"  ($scratch.Get "longestReadingPost")
+    "shortestReadingPost" ($scratch.Get "shortestReadingPost")
+    "imageCount"          $imageCount
+    "byYear"              $byYear
+    "byYearDesc"          $byYearDesc
+    "byMonth"             $byMonth
+    "byMonthAllTime"      $byMonthAllTime
+    "byDayOfWeek"         $byDayOfWeek
+    "wordsByYear"         $wordsByYear
+    "currentStreak"       $currentStreak
+    "currentStreakStart"  $currentStreakStart
+    "longestStreak"       $longestStreak
+    "longestStreakStart"  $longestStreakStart
+    "longestStreakEnd"    $longestStreakEnd
+}}

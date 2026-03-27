@@ -1,23 +1,15 @@
+<!-- mb-post-stats v2.0 -->
 {{ $since := "December, 2021" }}
 
-{{ $posts := where site.RegularPages "Type" "post" }}
+{{ $d := partial "poststats/data.html" . }}
 
-{{ $scratch := newScratch }}
-{{ $scratch.Set "wordcount" 0 }}
-{{ range $posts }}
-    {{ $scratch.Add "wordcount" .WordCount }}
-{{ end }}
-
-{{ range last 1 $posts }}
+{{ with $d.firstPost }}
     {{ $since = .Date.Format "January, 2006" }}
 {{ end }}
 
-{{ $postCount :=  len ($posts) }}
-{{ $wordCount := int ($scratch.Get "wordcount") }}
-
-{{ if gt $wordCount 40000 }}
-    {{ $novelCount := div $wordCount 40000 }}
-    <p class="post-stats">I have published <b>{{ $postCount }} posts</b> with <b>{{ $wordCount }} words</b> (that's almost {{ $novelCount }} novellas) since <em>{{ $since }}</em>.</p>
+{{ if gt $d.wordCount 40000 }}
+    {{ $novelCount := div $d.wordCount 40000 }}
+    <p class="post-stats">I have published <b>{{ $d.postCount }} posts</b> with <b>{{ $d.wordCount }} words</b> (that's almost {{ $novelCount }} novellas) since <em>{{ $since }}</em>.</p>
 {{ else }}
-    <p class="post-stats">I have published <b>{{ $postCount }} posts</b> with <b>{{ $wordCount }} words</b> since <em>{{ $since }}</em>.</p>
+    <p class="post-stats">I have published <b>{{ $d.postCount }} posts</b> with <b>{{ $d.wordCount }} words</b> since <em>{{ $since }}</em>.</p>
 {{ end }}

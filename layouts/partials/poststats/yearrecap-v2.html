@@ -1,0 +1,109 @@
+{{ if not .Site.Params.disable_year_recap }}
+    {{ $now := now }}
+    {{ $recapYear := cond (gt $now.Month 11) $now.Year (sub $now.Year 1) }}
+    {{ $lastYear  := sub $recapYear 1 }}
+
+    {{ $d := partial "poststats/data.html" . }}
+
+    {{ $recapPosts    := where $d.posts "Date.Year" $recapYear }}
+    {{ $postsLastYear := where $d.posts "Date.Year" $lastYear }}
+
+    {{ $postsChange := sub (len $recapPosts) (len $postsLastYear) }}
+    {{ $postTrend   := cond (gt $postsChange 0) "up" (cond (lt $postsChange 0) "down" "flat") }}
+    {{ $postArrow   := cond (gt $postsChange 0) "↑"  (cond (lt $postsChange 0) "↓"   "→") }}
+
+    {{ $recapTitled     := len (where $recapPosts ".Params.title" "!=" nil) }}
+    {{ $recapMicro      := len (where $recapPosts ".Params.title" "="  nil) }}
+    {{ $postsWithImages := len (where $recapPosts ".Params.images" "!=" nil) }}
+
+    {{ $scratch := newScratch }}
+    {{ $scratch.Set "wordcount" 0 }}
+    {{ $scratch.Set "longCount" 0 }}
+    {{ range $recapPosts }}
+        {{ $scratch.Add "wordcount" .WordCount }}
+        {{ if ge .WordCount ($scratch.Get "longCount") }}
+            {{ $scratch.Set "longestPost" . }}
+            {{ $scratch.Set "longCount" .WordCount }}
+        {{ end }}
+    {{ end }}
+
+    {{ $scratch.Set "previouswordcount" 0 }}
+    {{ range $postsLastYear }}
+        {{ $scratch.Add "previouswordcount" .WordCount }}
+    {{ end }}
+
+    {{ $recapPostCount    := len $recapPosts }}
+    {{ $recapWordCount    := int ($scratch.Get "wordcount") }}
+    {{ $previousWordCount := int ($scratch.Get "previouswordcount") }}
+    {{ $recapAvgPostLength := 0 }}
+    {{ if gt $recapPostCount 0 }}
+        {{ $recapAvgPostLength = div $recapWordCount $recapPostCount }}
+    {{ end }}
+
+    {{ $wordChange := sub $recapWordCount $previousWordCount }}
+    {{ $wordTrend  := cond (gt $wordChange 0) "up" (cond (lt $wordChange 0) "down" "flat") }}
+    {{ $wordArrow  := cond (gt $wordChange 0) "↑"  (cond (lt $wordChange 0) "↓"   "→") }}
+
+    <div class="ps-recap">
+      <div class="ps-recap__year">{{ $recapYear }} Year Recap</div>
+
+      <div class="ps-recap__row">
+        <div class="ps-recap__stat">
+          <span class="ps-recap__stat-value">
+            {{ $recapPostCount | lang.NumFmt 0 }}
+            <span class="ps-trend ps-trend--{{ $postTrend }}">{{ $postArrow }}</span>
+          </span>
+          <span class="ps-recap__stat-label">Posts Published</span>
+        </div>
+        <div class="ps-recap__stat">
+          <span class="ps-recap__stat-value">
+            {{ $recapWordCount | lang.NumFmt 0 }}
+            <span class="ps-trend ps-trend--{{ $wordTrend }}">{{ $wordArrow }}</span>
+          </span>
+          <span class="ps-recap__stat-label">Words Written</span>
+        </div>
+        <div class="ps-recap__stat">
+          <span class="ps-recap__stat-value">{{ $recapAvgPostLength | lang.NumFmt 0 }}</span>
+          <span class="ps-recap__stat-label">Avg Words / Post</span>
+        </div>
+      </div>
+
+      <ul class="ps-recap__insights">
+        {{ if gt $postsWithImages 0 }}
+          <li>Posted {{ $postsWithImages | lang.NumFmt 0 }} posts with images</li>
+        {{ end }}
+        {{ if gt $recapTitled $recapMicro }}
+          <li>More titled posts ({{ $recapTitled | lang.NumFmt 0 }}) than micro posts ({{ $recapMicro | lang.NumFmt 0 }})</li>
+        {{ else if gt $recapMicro $recapTitled }}
+          <li>More micro posts ({{ $recapMicro | lang.NumFmt 0 }}) than titled posts ({{ $recapTitled | lang.NumFmt 0 }})</li>
+        {{ end }}
+        <li>Average words per post: {{ $recapAvgPostLength | lang.NumFmt 0 }}</li>
+        {{ with $scratch.Get "longestPost" }}
+          <li>Longest post:
+            {{ if .Title }}<a href="{{ .Permalink }}">{{ .Title }}</a>
+            {{ else }}<a href="{{ .Permalink }}">Micro post</a>{{ end }}
+            · {{ .WordCount | lang.NumFmt 0 }} words
+          </li>
+        {{ end }}
+      </ul>
+
+      {{ $monthKeys   := slice }}
+      {{ $monthCounts := slice }}
+      {{ $recapYearStr := string $recapYear }}
+      {{ with index $d.byMonth $recapYearStr }}
+          {{ range . }}
+              {{ $monthKeys   = $monthKeys   | append .key }}
+              {{ $monthCounts = $monthCounts | append .count }}
+          {{ end }}
+      {{ end }}
+
+      {{ partial "poststats/chart.html" (dict
+          "chartId"    "recapyearchart"
+          "chartType"  "bar"
+          "labels"     $monthKeys
+          "data"       $monthCounts
+          "includeCDN" true
+          "short"      true
+      ) }}
+    </div>
+{{ end }}
