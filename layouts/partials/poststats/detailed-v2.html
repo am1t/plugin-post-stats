@@ -264,8 +264,8 @@
   <div class="ps-section">
     <div class="ps-section__header">
       <h3 class="ps-section__title">Categories</h3>
-      {{ if gt (len $allCats) $catCap }}
-      <span class="ps-section__meta">Top {{ $catCap }} of {{ len $allCats }}</span>
+      {{ if gt (len $allCats) 50 }}
+      <span class="ps-section__meta">Top 50 of {{ len $allCats }}</span>
       {{ end }}
     </div>
     <div class="ps-cloud">
