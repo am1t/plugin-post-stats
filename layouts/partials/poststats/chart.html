@@ -25,14 +25,14 @@
 
 <script type="text/javascript">
 (function() {
-    var ctx = document.getElementById({{ $chartId | jsonify }}).getContext('2d');
+    var ctx = document.getElementById({{ $chartId | jsonify | safeJS }}).getContext('2d');
     new Chart(ctx, {
-        type: {{ $chartType | jsonify }},
+        type: {{ $chartType | jsonify | safeJS }},
         data: {
-            labels: {{ $labels | jsonify }},
+            labels: {{ $labels | jsonify | safeJS }},
             datasets: [{
-                label: {{ $label | jsonify }},
-                data: {{ $data | jsonify }},
+                label: {{ $label | jsonify | safeJS }},
+                data: {{ $data | jsonify | safeJS }},
                 backgroundColor: 'rgb(54, 162, 235)',
                 borderColor: 'rgb(54, 162, 235)',
                 borderWidth: 1
