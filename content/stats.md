@@ -7,5 +7,4 @@ weight: 100
 
 {{< poststats/yearrecap >}}
 
-## Overall Stats
 {{< poststats/detailed >}}

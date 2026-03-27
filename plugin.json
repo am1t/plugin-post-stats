@@ -11,6 +11,11 @@
 			"field": "params.disable_year_recap",
 			"label": "Remove Year Recap section from the stats page",
 			"type": "boolean"
+		},
+		{
+			"field": "params.use_legacy_stats",
+			"label": "Use the original minimal stats layout instead of the revamped design",
+			"type": "boolean"
 		}
 	]
   }

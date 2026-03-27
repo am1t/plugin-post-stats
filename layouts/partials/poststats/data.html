@@ -6,47 +6,90 @@
     {{ $data := partial "poststats/data.html" . }}
 
   Returns a dict with:
-    - posts         : all posts (RegularPages of type "post")
-    - postCount     : total number of posts
-    - wordCount     : total word count across all posts
-    - avgWordCount  : average words per post
-    - firstPost     : the earliest post (last in date-asc list)
-    - longestPost   : post with most words
-    - titledCount   : posts with a title
-    - microCount    : posts without a title
-    - byYear        : slice of dicts {key, count} newest-first
-    - byMonth       : map of year -> slice of dicts {key, count} newest-first
+    - posts               : all posts (RegularPages of type "post")
+    - postCount           : total number of posts
+    - wordCount           : total word count across all posts
+    - avgWordCount        : average words per post
+    - novellaCount        : wordCount / 40000 (integer)
+    - firstPost           : the earliest post
+    - longestPost         : post with most words
+    - titledCount         : posts with a title
+    - microCount          : posts without a title
+    - totalReadingTime    : sum of .ReadingTime across all posts (minutes)
+    - avgReadingTime      : average .ReadingTime per post (minutes)
+    - longestReadingPost  : post with highest .ReadingTime
+    - shortestReadingPost : post with lowest .ReadingTime (WordCount > 0)
+    - imageCount          : posts with .Params.images set
+    - byYear              : slice of dicts {key, count} newest-first
+    - byMonth             : map of year -> slice of dicts {key, count} newest-first
+    - byMonthAllTime      : slice of {key, count} Jan-Dec summed across all years
+    - byDayOfWeek         : slice of {key, count} Mon-Sun across all posts
 */}}
 
 {{ $posts := where site.RegularPages "Type" "post" }}
 
-{{/* Word count + longest post */}}
+{{/* Core counts */}}
 {{ $scratch := newScratch }}
 {{ $scratch.Set "wordcount" 0 }}
 {{ $scratch.Set "longCount" 0 }}
+{{ $scratch.Set "readingTime" 0 }}
+{{ $scratch.Set "shortReadCount" 99999 }}
+
+{{/* Day-of-week and month-all-time accumulators */}}
+{{ $dowMap := dict "Monday" 0 "Tuesday" 0 "Wednesday" 0 "Thursday" 0 "Friday" 0 "Saturday" 0 "Sunday" 0 }}
+{{ $momMap := dict "January" 0 "February" 0 "March" 0 "April" 0 "May" 0 "June" 0 "July" 0 "August" 0 "September" 0 "October" 0 "November" 0 "December" 0 }}
+
 {{ range $posts }}
+    {{/* Word count + longest post */}}
     {{ $scratch.Add "wordcount" .WordCount }}
     {{ if ge .WordCount ($scratch.Get "longCount") }}
         {{ $scratch.Set "longestPost" . }}
         {{ $scratch.Set "longCount" .WordCount }}
     {{ end }}
+
+    {{/* Reading time */}}
+    {{ $scratch.Add "readingTime" .ReadingTime }}
+    {{ if ge .ReadingTime ($scratch.Get "longReadCount" | default 0) }}
+        {{ $scratch.Set "longestReadingPost" . }}
+        {{ $scratch.Set "longReadCount" .ReadingTime }}
+    {{ end }}
+    {{ if and (gt .WordCount 0) (lt .ReadingTime ($scratch.Get "shortReadCount")) }}
+        {{ $scratch.Set "shortestReadingPost" . }}
+        {{ $scratch.Set "shortReadCount" .ReadingTime }}
+    {{ end }}
+
+    {{/* Day of week */}}
+    {{ $dow := .Date.Format "Monday" }}
+    {{ $dowMap = merge $dowMap (dict $dow (add (index $dowMap $dow) 1)) }}
+
+    {{/* Month all-time */}}
+    {{ $mon := .Date.Format "January" }}
+    {{ $momMap = merge $momMap (dict $mon (add (index $momMap $mon) 1)) }}
 {{ end }}
 
 {{ $postCount    := len $posts }}
 {{ $wordCount    := int ($scratch.Get "wordcount") }}
 {{ $avgWordCount := 0 }}
+{{ $novellaCount := 0 }}
 {{ if gt $postCount 0 }}
     {{ $avgWordCount = div $wordCount $postCount }}
 {{ end }}
+{{ if gt $wordCount 0 }}
+    {{ $novellaCount = div $wordCount 40000 }}
+{{ end }}
 
-{{ $firstPost    := "" }}
+{{ $firstPost := "" }}
 {{ range last 1 $posts }}
     {{ $firstPost = . }}
 {{ end }}
 
-{{ $longestPost  := $scratch.Get "longestPost" }}
-{{ $titledCount  := len (where $posts ".Params.title" "!=" nil) }}
-{{ $microCount   := len (where $posts ".Params.title" "=" nil) }}
+{{ $totalReadingTime := int ($scratch.Get "readingTime") }}
+{{ $avgReadingTime   := 0 }}
+{{ if gt $postCount 0 }}
+    {{ $avgReadingTime = div $totalReadingTime $postCount }}
+{{ end }}
+
+{{ $imageCount := len (where $posts ".Params.images" "!=" nil) }}
 
 {{/* Posts by year */}}
 {{ $byYear := slice }}
@@ -68,15 +111,37 @@
     {{ $byMonth = merge $byMonth (dict $year $months) }}
 {{ end }}
 
+{{/* Posts by month all-time (Jan–Dec ordered) */}}
+{{ $monthOrder := slice "January" "February" "March" "April" "May" "June" "July" "August" "September" "October" "November" "December" }}
+{{ $byMonthAllTime := slice }}
+{{ range $monthOrder }}
+    {{ $byMonthAllTime = $byMonthAllTime | append (dict "key" . "count" (index $momMap .)) }}
+{{ end }}
+
+{{/* Posts by day of week (Mon–Sun ordered) */}}
+{{ $dowOrder := slice "Monday" "Tuesday" "Wednesday" "Thursday" "Friday" "Saturday" "Sunday" }}
+{{ $byDayOfWeek := slice }}
+{{ range $dowOrder }}
+    {{ $byDayOfWeek = $byDayOfWeek | append (dict "key" . "count" (index $dowMap .)) }}
+{{ end }}
+
 {{ return dict
-    "posts"       $posts
-    "postCount"   $postCount
-    "wordCount"   $wordCount
-    "avgWordCount" $avgWordCount
-    "firstPost"   $firstPost
-    "longestPost" $longestPost
-    "titledCount" $titledCount
-    "microCount"  $microCount
-    "byYear"      $byYear
-    "byMonth"     $byMonth
+    "posts"               $posts
+    "postCount"           $postCount
+    "wordCount"           $wordCount
+    "avgWordCount"        $avgWordCount
+    "novellaCount"        $novellaCount
+    "firstPost"           $firstPost
+    "longestPost"         ($scratch.Get "longestPost")
+    "titledCount"         (len (where $posts ".Params.title" "!=" nil))
+    "microCount"          (len (where $posts ".Params.title" "=" nil))
+    "totalReadingTime"    $totalReadingTime
+    "avgReadingTime"      $avgReadingTime
+    "longestReadingPost"  ($scratch.Get "longestReadingPost")
+    "shortestReadingPost" ($scratch.Get "shortestReadingPost")
+    "imageCount"          $imageCount
+    "byYear"              $byYear
+    "byMonth"             $byMonth
+    "byMonthAllTime"      $byMonthAllTime
+    "byDayOfWeek"         $byDayOfWeek
 }}
