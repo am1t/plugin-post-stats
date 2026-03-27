@@ -258,32 +258,32 @@
   {{ end }}
 
   {{/* ── Category Cloud ── */}}
-  {{ if ne (len $.Site.Taxonomies.categories) 0 }}
+  {{ $allCats := $.Site.Taxonomies.categories.ByCount }}
+  {{ if ne (len $allCats) 0 }}
+  {{ $cats := first 50 $allCats }}
   <div class="ps-section">
     <div class="ps-section__header">
       <h3 class="ps-section__title">Categories</h3>
+      {{ if gt (len $allCats) $catCap }}
+      <span class="ps-section__meta">Top {{ $catCap }} of {{ len $allCats }}</span>
+      {{ end }}
     </div>
     <div class="ps-cloud">
       {{ $largestFontSize  := 1.4 }}
       {{ $smallestFontSize := 1.0 }}
-      {{ $fontSpread := sub $largestFontSize $smallestFontSize }}
-      {{ $max := add (len (index $.Site.Taxonomies.categories.ByCount 0).Pages) 1 }}
-      {{ $min := len (index $.Site.Taxonomies.categories.ByCount.Reverse 0).Pages }}
+      {{ $max    := add (len (index $cats 0).Pages) 1 }}
+      {{ $min    := len (index $cats (sub (len $cats) 1)).Pages }}
       {{ $spread := sub $max $min }}
-      {{ $fontStep := 0.0 }}
-      {{ if gt $spread 0 }}
-        {{ $fontStep = div $fontSpread $spread }}
-      {{ end }}
-      {{ range $name, $taxonomy := $.Site.Taxonomies.categories }}
-        {{ $categoryCount := len $taxonomy.Pages }}
+      {{ range $cats }}
+        {{ $categoryCount := len .Pages }}
         {{ $currentFontSize := $smallestFontSize }}
         {{ if gt $spread 0 }}
           {{ $weight := div (sub (math.Log $categoryCount) (math.Log $min)) (sub (math.Log $max) (math.Log $min)) }}
           {{ $currentFontSize = add $smallestFontSize (mul (sub $largestFontSize $smallestFontSize) $weight) }}
         {{ end }}
-        <a href="{{ "/categories/" | relURL }}{{ $name | urlize }}"
+        <a href="{{ "/categories/" | relURL }}{{ .Page.Title | urlize }}"
            class="ps-cloud__item" style="font-size: {{ $currentFontSize }}rem;">
-          {{ $name }}<sup>{{ $categoryCount }}</sup>
+          {{ .Page.Title }}<sup>{{ $categoryCount }}</sup>
         </a>
       {{ end }}
     </div>
