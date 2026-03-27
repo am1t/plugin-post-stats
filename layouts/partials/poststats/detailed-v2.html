@@ -182,6 +182,27 @@
     </div>
   </div>
 
+  {{/* ── Word Count Over Time ── */}}
+  {{ $wordYearKeys   := slice }}
+  {{ $wordYearCounts := slice }}
+  {{ range $d.wordsByYear }}
+      {{ $wordYearKeys   = $wordYearKeys   | append .key }}
+      {{ $wordYearCounts = $wordYearCounts | append .words }}
+  {{ end }}
+
+  <div class="ps-section">
+    <div class="ps-section__header">
+      <h3 class="ps-section__title">Word Count Over Time</h3>
+      <span class="ps-section__meta">Cumulative</span>
+    </div>
+    {{ partial "poststats/chart.html" (dict
+        "chartId"   "wordchart"
+        "chartType" "line"
+        "labels"    $wordYearKeys
+        "data"      $wordYearCounts
+    ) }}
+  </div>
+
   {{/* ── Image Usage ── */}}
   {{ if gt $d.imageCount 0 }}
   <div class="ps-section">

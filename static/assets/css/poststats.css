@@ -71,6 +71,7 @@
   margin-bottom: 0.3rem;
   letter-spacing: -0.03em;
   color: var(--ps-accent);
+  font-family: Georgia, serif;
 }
 
 .ps-card__label {
@@ -263,12 +264,13 @@
 
 .ps-reading-stat {
   flex: 1;
-  min-width: 130px;
+  min-width: 150px;
   border-radius: var(--ps-radius);
   border: 1px solid var(--ps-border);
   padding: 0.9rem 1rem;
   box-shadow: var(--ps-shadow);
 }
+
 
 .ps-reading-stat__value {
   font-size: 1.5rem;
@@ -277,12 +279,14 @@
   letter-spacing: -0.02em;
   line-height: 1;
   margin-bottom: 0.2rem;
+  font-family: Georgia, serif;
 }
 
 .ps-reading-stat__label {
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
+  white-space: nowrap;
   opacity: var(--ps-muted);
   font-family: sans-serif;
 }
@@ -314,6 +318,7 @@
   color: var(--ps-accent);
   line-height: 1;
   letter-spacing: -0.04em;
+  font-family: Georgia, serif;
 }
 
 .ps-streak-card__label {
@@ -383,6 +388,7 @@
   letter-spacing: -0.02em;
   color: var(--ps-accent);
   line-height: 1;
+  font-family: Georgia, serif;
 }
 
 .ps-recap__stat-label {

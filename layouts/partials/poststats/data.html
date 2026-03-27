@@ -24,6 +24,7 @@
     - byMonth             : map of year -> slice of dicts {key, count} newest-first
     - byMonthAllTime      : slice of {key, count} Jan-Dec summed across all years
     - byDayOfWeek         : slice of {key, count} Mon-Sun across all posts
+    - wordsByYear         : slice of {key, words} cumulative word count oldest-first
 */}}
 
 {{ $posts := where site.RegularPages "Type" "post" }}
@@ -91,8 +92,18 @@
 
 {{ $imageCount := len (where $posts ".Params.images" "!=" nil) }}
 
-{{/* Posts by year */}}
+{{/* Posts by year + cumulative word count by year */}}
 {{ $byYear := slice }}
+{{ $wordsByYear := slice }}
+{{ $cumulativeWords := 0 }}
+{{ range ($posts.GroupByDate "2006") }}
+    {{ $yearPosts2 := where .Pages "Type" "post" }}
+    {{ $yearWords  := 0 }}
+    {{ range $yearPosts2 }}{{ $yearWords = add $yearWords .WordCount }}{{ end }}
+    {{ $cumulativeWords = add $cumulativeWords $yearWords }}
+    {{ $wordsByYear = $wordsByYear | append (dict "key" .Key "words" $cumulativeWords) }}
+{{ end }}
+{{ $wordsByYear = $wordsByYear.Reverse }}
 {{ range ($posts.GroupByDate "2006").Reverse }}
     {{ $yearCount := len (where .Pages "Type" "post") }}
     {{ $byYear = $byYear | append (dict "key" .Key "count" $yearCount) }}
@@ -144,4 +155,5 @@
     "byMonth"             $byMonth
     "byMonthAllTime"      $byMonthAllTime
     "byDayOfWeek"         $byDayOfWeek
+    "wordsByYear"         $wordsByYear
 }}
