@@ -20,7 +20,8 @@
     - longestReadingPost  : post with highest .ReadingTime
     - shortestReadingPost : post with lowest .ReadingTime (WordCount > 0)
     - imageCount          : posts with .Params.images set
-    - byYear              : slice of dicts {key, count} newest-first
+    - byYear              : slice of dicts {key, count} oldest-first (for chart)
+    - byYearDesc          : slice of dicts {key, count} newest-first (for table)
     - byMonth             : map of year -> slice of dicts {key, count} newest-first
     - byMonthAllTime      : slice of {key, count} Jan-Dec summed across all years
     - byDayOfWeek         : slice of {key, count} Mon-Sun across all posts
@@ -92,21 +93,27 @@
 
 {{ $imageCount := len (where $posts ".Params.images" "!=" nil) }}
 
-{{/* Posts by year + cumulative word count by year */}}
+{{/* Posts by year — oldest-first for chart, newest-first for table */}}
 {{ $byYear := slice }}
+{{ $byYearDesc := slice }}
+{{ range ($posts.GroupByDate "2006").Reverse }}
+    {{ $yearCount := len (where .Pages "Type" "post") }}
+    {{ $byYear = $byYear | append (dict "key" .Key "count" $yearCount) }}
+{{ end }}
+{{ range ($posts.GroupByDate "2006") }}
+    {{ $yearCount := len (where .Pages "Type" "post") }}
+    {{ $byYearDesc = $byYearDesc | append (dict "key" .Key "count" $yearCount) }}
+{{ end }}
+
+{{/* wordsByYear: oldest-first so cumulative sum builds correctly */}}
 {{ $wordsByYear := slice }}
 {{ $cumulativeWords := 0 }}
-{{ range ($posts.GroupByDate "2006") }}
+{{ range ($posts.GroupByDate "2006").Reverse }}
     {{ $yearPosts2 := where .Pages "Type" "post" }}
     {{ $yearWords  := 0 }}
     {{ range $yearPosts2 }}{{ $yearWords = add $yearWords .WordCount }}{{ end }}
     {{ $cumulativeWords = add $cumulativeWords $yearWords }}
     {{ $wordsByYear = $wordsByYear | append (dict "key" .Key "words" $cumulativeWords) }}
-{{ end }}
-{{ $wordsByYear = $wordsByYear.Reverse }}
-{{ range ($posts.GroupByDate "2006").Reverse }}
-    {{ $yearCount := len (where .Pages "Type" "post") }}
-    {{ $byYear = $byYear | append (dict "key" .Key "count" $yearCount) }}
 {{ end }}
 
 {{/* Posts by month per year — map[year -> slice of {key, count}] */}}
@@ -152,6 +159,7 @@
     "shortestReadingPost" ($scratch.Get "shortestReadingPost")
     "imageCount"          $imageCount
     "byYear"              $byYear
+    "byYearDesc"          $byYearDesc
     "byMonth"             $byMonth
     "byMonthAllTime"      $byMonthAllTime
     "byDayOfWeek"         $byDayOfWeek

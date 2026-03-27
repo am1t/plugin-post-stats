@@ -130,7 +130,7 @@
       <table class="ps-table">
         <thead><tr><th>Year</th><th>Posts</th></tr></thead>
         <tbody>
-          {{ range $d.byYear }}
+          {{ range $d.byYearDesc }}
           <tr><td>{{ .key }}</td><td>{{ .count | lang.NumFmt 0 }}</td></tr>
           {{ end }}
         </tbody>
