@@ -303,6 +303,7 @@
 
 .ps-streak-card {
   border-radius: var(--ps-radius);
+  border: 1px solid var(--ps-border);
   padding: 1.2rem;
   box-shadow: var(--ps-shadow);
   text-align: center;
@@ -311,6 +312,14 @@
 .ps-streak-card--current {
   background: var(--ps-accent-light);
   border: 1.5px solid var(--ps-accent-muted);
+}
+
+.ps-streak-card--inactive {
+  opacity: 0.5;
+}
+
+.ps-streak-card--inactive .ps-streak-card__days {
+  color: var(--ps-text);
 }
 
 .ps-streak-card__days {

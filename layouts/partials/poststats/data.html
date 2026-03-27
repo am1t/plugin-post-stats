@@ -26,6 +26,11 @@
     - byMonthAllTime      : slice of {key, count} Jan-Dec summed across all years
     - byDayOfWeek         : slice of {key, count} Mon-Sun across all posts
     - wordsByYear         : slice of {key, words} cumulative word count oldest-first
+    - currentStreak       : number of consecutive days posted up to today
+    - currentStreakStart  : start date (YYYY-MM-DD) of current streak
+    - longestStreak       : longest consecutive day posting streak (days)
+    - longestStreakStart  : start date (YYYY-MM-DD) of longest streak
+    - longestStreakEnd    : end date (YYYY-MM-DD) of longest streak
 */}}
 
 {{ $posts := where site.RegularPages "Type" "post" }}
@@ -143,6 +148,81 @@
     {{ $byDayOfWeek = $byDayOfWeek | append (dict "key" . "count" (index $dowMap .)) }}
 {{ end }}
 
+{{/* ── Streak computation ──
+     Collect unique posting days (YYYY-MM-DD) oldest-first, then:
+     1. Walk forward to find longest streak + its date range.
+     2. Walk backward from today to find current streak + its start date.
+     Days are compared by floor(unix/86400) so timezone offsets don't matter.
+*/}}
+{{ $seenDays := slice }}
+{{ $daysSeen := dict }}
+{{ range $posts.ByDate }}
+    {{ $dayKey := .Date.Format "2006-01-02" }}
+    {{ if not (index $daysSeen $dayKey) }}
+        {{ $seenDays = $seenDays | append $dayKey }}
+        {{ $daysSeen = merge $daysSeen (dict $dayKey true) }}
+    {{ end }}
+{{ end }}
+
+{{ $currentStreak      := 0 }}
+{{ $currentStreakStart := "" }}
+{{ $longestStreak      := 0 }}
+{{ $longestStreakStart := "" }}
+{{ $longestStreakEnd   := "" }}
+
+{{ if gt (len $seenDays) 0 }}
+
+    {{/* 1. Longest streak: walk forward through sorted unique days */}}
+    {{ $runLen   := 1 }}
+    {{ $runStart := index $seenDays 0 }}
+    {{ $prevDay  := div (time (index $seenDays 0)).Unix 86400 }}
+
+    {{ range $i, $dayStr := $seenDays }}
+        {{ if eq $i 0 }}{{ continue }}{{ end }}
+        {{ $curDay := div (time $dayStr).Unix 86400 }}
+        {{ if eq $curDay (add $prevDay 1) }}
+            {{ $runLen = add $runLen 1 }}
+        {{ else }}
+            {{ if gt $runLen $longestStreak }}
+                {{ $longestStreak     = $runLen }}
+                {{ $longestStreakStart = $runStart }}
+                {{ $longestStreakEnd   = index $seenDays (sub $i 1) }}
+            {{ end }}
+            {{ $runLen   = 1 }}
+            {{ $runStart = $dayStr }}
+        {{ end }}
+        {{ $prevDay = $curDay }}
+    {{ end }}
+    {{/* Flush last run */}}
+    {{ if gt $runLen $longestStreak }}
+        {{ $longestStreak     = $runLen }}
+        {{ $longestStreakStart = $runStart }}
+        {{ $longestStreakEnd   = index $seenDays (sub (len $seenDays) 1) }}
+    {{ end }}
+
+    {{/* 2. Current streak: walk backward from today (or yesterday) */}}
+    {{ $todayDay  := div now.Unix 86400 }}
+    {{ $lastDay   := div (time (index $seenDays (sub (len $seenDays) 1))).Unix 86400 }}
+    {{/* Only count if last post was today or yesterday */}}
+    {{ if or (eq $lastDay $todayDay) (eq $lastDay (sub $todayDay 1)) }}
+        {{ $cs       := 1 }}
+        {{ $expected := sub $lastDay 1 }}
+        {{ range seq (sub (len $seenDays) 2) 0 -1 }}
+            {{ $dayFloor := div (time (index $seenDays .)).Unix 86400 }}
+            {{ if eq $dayFloor $expected }}
+                {{ $cs       = add $cs 1 }}
+                {{ $expected = sub $expected 1 }}
+            {{ else }}
+                {{ break }}
+            {{ end }}
+        {{ end }}
+        {{ $currentStreak      = $cs }}
+        {{ $csStartIdx         := sub (len $seenDays) $cs }}
+        {{ $currentStreakStart  = index $seenDays $csStartIdx }}
+    {{ end }}
+
+{{ end }}
+
 {{ return dict
     "posts"               $posts
     "postCount"           $postCount
@@ -164,4 +244,9 @@
     "byMonthAllTime"      $byMonthAllTime
     "byDayOfWeek"         $byDayOfWeek
     "wordsByYear"         $wordsByYear
+    "currentStreak"       $currentStreak
+    "currentStreakStart"  $currentStreakStart
+    "longestStreak"       $longestStreak
+    "longestStreakStart"  $longestStreakStart
+    "longestStreakEnd"    $longestStreakEnd
 }}

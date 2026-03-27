@@ -104,6 +104,39 @@
     </div>
   </div>
 
+  {{/* ── Posting Streak ── */}}
+  {{ if gt $d.longestStreak 0 }}
+  <div class="ps-section">
+    <div class="ps-section__header">
+      <h3 class="ps-section__title">Posting Streak</h3>
+    </div>
+    <div class="ps-streak-grid">
+      {{ if gt $d.currentStreak 0 }}
+      <div class="ps-streak-card ps-streak-card--current">
+        <div class="ps-streak-card__days">{{ $d.currentStreak }}</div>
+        <div class="ps-streak-card__label">Current Streak</div>
+        <div class="ps-streak-card__range">
+          {{ (time $d.currentStreakStart).Format "Jan 2" }} – {{ now.Format "Jan 2, 2006" }}
+        </div>
+      </div>
+      {{ else }}
+      <div class="ps-streak-card ps-streak-card--inactive">
+        <div class="ps-streak-card__days">0</div>
+        <div class="ps-streak-card__label">Current Streak</div>
+        <div class="ps-streak-card__range">No posts today or yesterday</div>
+      </div>
+      {{ end }}
+      <div class="ps-streak-card">
+        <div class="ps-streak-card__days">{{ $d.longestStreak }}</div>
+        <div class="ps-streak-card__label">Longest Streak</div>
+        <div class="ps-streak-card__range">
+          {{ (time $d.longestStreakStart).Format "Jan 2" }} – {{ (time $d.longestStreakEnd).Format "Jan 2, 2006" }}
+        </div>
+      </div>
+    </div>
+  </div>
+  {{ end }}
+
   {{/* ── Posts Per Year ── */}}
   {{ $yearKeys   := slice }}
   {{ $yearCounts := slice }}
