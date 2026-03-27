@@ -257,14 +257,16 @@
    READING TIME / IMAGE STATS
 ═══════════════════════════════ */
 .ps-reading-row {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: var(--ps-gap);
 }
 
+@media (max-width: 480px) {
+  .ps-reading-row { grid-template-columns: repeat(2, 1fr); }
+}
+
 .ps-reading-stat {
-  flex: 1;
-  min-width: 150px;
   border-radius: var(--ps-radius);
   border: 1px solid var(--ps-border);
   padding: 0.9rem 1rem;
