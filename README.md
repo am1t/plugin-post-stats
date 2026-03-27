@@ -1,33 +1,71 @@
 # Micro.blog Plugin - Posts Stats
-A Micro.blog plugin that adds a `/stats` page to your site to display the stats about all the published posts. A sample screenshot of the stats page is displayed below. And there's a lot more, [demo here](https://www.amitgawande.com/stats/).
+A Micro.blog plugin that adds a `/stats` page to your site displaying comprehensive stats about all your published posts. [Demo here](https://amitg.blog/stats/).
 
-![Plugin Posts Stats Screenshot](https://raw.githubusercontent.com/am1t/plugin-post-stats/main/static/images/poststats.png?raw=true)
+![Plugin Posts Stats Screenshot](https://raw.githubusercontent.com/am1t/plugin-post-stats/main/static/images/post-stats-v2.png?raw=true)
 
 This plugin is built for Micro.blog by [@amit](https://micro.blog/amit).
 
 ### Installing the plug-in
 
-The plugi-in is avialble in the Micro.blog Plug-in directory. Just make sure you are logged in to your account, go to the "Plug-ins" section and click "Find Plug-ins". Install "Posts Stats by @amit".
+The plugin is available in the Micro.blog Plug-in directory. Just make sure you are logged in to your account, go to the "Plug-ins" section and click "Find Plug-ins". Install "Posts Stats by @amit".
 
 Once installed, you should see a new Menu entry for "Stats" pointing to `/stats`. **Note** that the first run may take some time to display the correct stats.
 
-### Word Count and Post Count as Shortcodes
+### Stats Page Layout (v2)
 
-The plugin also publishes you words count and posts count as shortcodes. You can use `{{< poststats/wordcount >}}` or `{{< poststats/postcount >}}` annywhere on your markdown pages. These would be replaced by the respective values.
+The revamped v2 stats page includes the following sections:
 
-### Removing Stats from menu
+- **Summary** — Total posts, words, images, and the date range of your writing
+- **Reading Time** — Total reading time, average per post, and your longest and shortest reads
+- **Publishing Patterns** — Posts per month (all-time) and posts by day of week, visualized as bar charts
+- **Posting Streak** — Current streak and your longest streak with date ranges
+- **Posts by Year** — Yearly breakdown with bar chart, expandable table, and per-year word counts
+- **Top Tags** — Your most-used tags as a weighted cloud
+- **Word Count Over Time** — Scatter chart of word count per post across your writing history
+- **Year Recap** — A focused summary for the current year (can be disabled via plugin settings)
 
-There is no configuration as of now to not show the new page in the Menu. However, you can achieve that by either of the two ways.
+### Shortcodes
 
-1. "On the web, logged in to your blog go to the design section and click the Edit Custom Themes button. The next page should show a list of themes and plugins. Click on Post Stats plugin. Then you'll see all the associated files. Click on content/stats.md . Edit the menu line to remove the word between speech marks, so you end up with: menu: ''" - [h/t Miraz Jordan](https://micro.blog/Miraz/12310468)
-2. "Add [custom CSS](https://help.micro.blog/t/custom-css/54): `nav a[href='/stats/'] { display: none; }`" - [h/t Sven Dahlstrand](https://micro.blog/sod/12310306) 
+The plugin exposes the following shortcodes you can use anywhere in your markdown pages:
 
-### Planned Features
+- `{{< poststats/wordcount >}}` — Replaced with your total word count
+- `{{< poststats/postcount >}}` — Replaced with your total post count
+- `{{< poststats/detailed >}}` — Embeds the full detailed stats layout (same as the `/stats` page)
+- `{{< poststats/yearrecap >}}` — Embeds just the Year Recap section
 
-* [x] Include stats for posts with images, audio (handled by category)
-* [x] Chart for posts by year
+### Plugin Settings
+
+The following settings are available via the Micro.blog plugin configuration UI:
+
+| Setting | Description |
+|---|---|
+| `use_legacy_stats` | Use the original minimal stats layout instead of the revamped v2 design |
+| `disable_year_recap` | Remove the Year Recap section from the stats page |
+
+### Removing Stats from Menu
+
+There is no built-in option to hide the stats page from the menu. You can work around this in two ways:
+
+1. Edit `content/stats.md` via Design > Edit Custom Themes > Post Stats plugin, and remove the value from the `menu:` field — [h/t Miraz Jordan](https://micro.blog/Miraz/12310468)
+2. Add custom CSS: `nav a[href='/stats/'] { display: none; }` — [h/t Sven Dahlstrand](https://micro.blog/sod/12310306)
 
 ### Change Log
+
+**Version 2.0.0:** Released 27th March, 2026
+- Revamped stats page with a modern layout and 8 new sections
+- Added reading time stats (total, average, longest, shortest)
+- Added posting streak tracking (current and longest streaks)
+- Added posts per month chart (all-time totals across all years)
+- Added posts by day-of-week chart
+- Added top tags section
+- Added word count over time scatter chart
+- Added image usage stats to the summary
+- Introduced `use_legacy_stats` plugin param to opt back into the original layout
+- Extracted chart rendering to a shared partial for consistency
+- Fixed chart data to use `jsonify` instead of string concatenation
+- Fixed hard-coded Chart.js version with dynamic CDN loading
+- Scoped CSS selectors to avoid conflicts with blog themes
+- Added cap to category cloud iteration for large tag sets
 
 **Version 1.2.6:** Released 23rd March, 2026
 - Fixed word count crash in year recap when there are no posts for the recap year
@@ -47,11 +85,11 @@ There is no configuration as of now to not show the new page in the Menu. Howeve
 - Added a line chart for posts by year (based on Chart.js)
 - Added support of category cloud (h/t: [Mert Bekir](https://mertbakir.gitlab.io/about/))
 - Added stat to show the longest post
-- Fixed minor styling issues 
+- Fixed minor styling issues
 
 **Version 1.0.1:** Released 28th December, 2021
 - Display larger number with commas (digits grouped on thousands)
 
 **Version 1.0:** Released 27th December, 2021
-- First version with a sperate Stats page
+- First version with a separate Stats page
 - Includes stats summary and posts stats grouped by year and category
