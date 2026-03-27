@@ -201,30 +201,29 @@
         {{ $longestStreakEnd   = index $seenDays (sub (len $seenDays) 1) }}
     {{ end }}
 
-    {{/* 2. Current streak: walk backward through reversed unique days */}}
-    {{ $todayDay     := div now.Unix 86400 }}
-    {{ $seenDaysRev  := slice }}
-    {{ range $seenDays }}{{ $seenDaysRev = prepend $seenDaysRev . }}{{ end }}
-    {{ $lastDay := div (time (index $seenDaysRev 0)).Unix 86400 }}
-    {{/* Only count if last post was today or yesterday */}}
+    {{/* 2. Current streak: walk forward, reset on gap, result is the trailing run */}}
+    {{ $todayDay  := div now.Unix 86400 }}
+    {{ $lastIdx   := sub (len $seenDays) 1 }}
+    {{ $lastDay   := div (time (index $seenDays $lastIdx)).Unix 86400 }}
+    {{/* Only active if last post was today or yesterday */}}
     {{ if or (eq $lastDay $todayDay) (eq $lastDay (sub $todayDay 1)) }}
-        {{ $cs       := 1 }}
-        {{ $expected := sub $lastDay 1 }}
-        {{ $broken   := false }}
-        {{ range $i, $dayStr := $seenDaysRev }}
-            {{ if and (gt $i 0) (not $broken) }}
-                {{ $dayFloor := div (time $dayStr).Unix 86400 }}
-                {{ if eq $dayFloor $expected }}
-                    {{ $cs       = add $cs 1 }}
-                    {{ $expected = sub $expected 1 }}
+        {{ $cs      := 1 }}
+        {{ $csStart := index $seenDays 0 }}
+        {{ $prevD   := div (time (index $seenDays 0)).Unix 86400 }}
+        {{ range $i, $dayStr := $seenDays }}
+            {{ if gt $i 0 }}
+                {{ $curD := div (time $dayStr).Unix 86400 }}
+                {{ if eq $curD (add $prevD 1) }}
+                    {{ $cs = add $cs 1 }}
                 {{ else }}
-                    {{ $broken = true }}
+                    {{ $cs      = 1 }}
+                    {{ $csStart = $dayStr }}
                 {{ end }}
+                {{ $prevD = $curD }}
             {{ end }}
         {{ end }}
         {{ $currentStreak     = $cs }}
-        {{ $csStartIdx        := sub (len $seenDays) $cs }}
-        {{ $currentStreakStart = index $seenDays $csStartIdx }}
+        {{ $currentStreakStart = $csStart }}
     {{ end }}
 
 {{ end }}
