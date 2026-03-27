@@ -1,6 +1,7 @@
 <!-- mb-post-stats v2.0 -->
 {{ $d := partial "poststats/data.html" . }}
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{{/* Load Chart.js CDN here only if yearrecap is disabled (otherwise yearrecap loads it) */}}
+{{ $loadCDN := $.Site.Params.disable_year_recap | default false }}
 
 <div class="ps-stats">
 
@@ -150,10 +151,11 @@
       <h3 class="ps-section__title">Posts Per Year</h3>
     </div>
     {{ partial "poststats/chart.html" (dict
-        "chartId"   "yearchart"
-        "chartType" "bar"
-        "labels"    $yearKeys
-        "data"      $yearCounts
+        "chartId"    "yearchart"
+        "chartType"  "bar"
+        "labels"     $yearKeys
+        "data"       $yearCounts
+        "includeCDN" $loadCDN
     ) }}
     <button class="ps-toggle" id="toggleYearTable" aria-expanded="false">
       <span>Show data table</span>
