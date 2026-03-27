@@ -72,33 +72,33 @@
     <div class="ps-section__header">
       <h3 class="ps-section__title">Reading Time</h3>
     </div>
-    <div class="ps-reading-row">
-      <div class="ps-reading-stat">
-        <div class="ps-reading-stat__value">
+    <div class="ps-stat-row">
+      <div class="ps-stat-card">
+        <div class="ps-stat-card__value">
           {{ if ge $d.totalReadingTime 60 }}{{ div $d.totalReadingTime 60 }} hrs
           {{ else }}{{ $d.totalReadingTime }} min{{ end }}
         </div>
-        <div class="ps-reading-stat__label">Total Reading Time</div>
+        <div class="ps-stat-card__label">Total Reading Time</div>
       </div>
-      <div class="ps-reading-stat">
-        <div class="ps-reading-stat__value">
+      <div class="ps-stat-card">
+        <div class="ps-stat-card__value">
           {{ if eq $d.avgReadingTime 0 }}&lt;1 min
           {{ else }}~{{ $d.avgReadingTime }} min{{ end }}
         </div>
-        <div class="ps-reading-stat__label">Avg per Post</div>
+        <div class="ps-stat-card__label">Avg per Post</div>
       </div>
       {{ with $d.longestReadingPost }}
-      <div class="ps-reading-stat">
-        <div class="ps-reading-stat__value">{{ .ReadingTime }} min</div>
-        <div class="ps-reading-stat__label">Longest Read</div>
+      <div class="ps-stat-card">
+        <div class="ps-stat-card__value">{{ .ReadingTime }} min</div>
+        <div class="ps-stat-card__label">Longest Read</div>
       </div>
       {{ end }}
       {{ with $d.shortestReadingPost }}
-      <div class="ps-reading-stat">
-        <div class="ps-reading-stat__value">
+      <div class="ps-stat-card">
+        <div class="ps-stat-card__value">
           {{ if eq .ReadingTime 0 }}&lt;1 min{{ else }}{{ .ReadingTime }} min{{ end }}
         </div>
-        <div class="ps-reading-stat__label">Shortest Read</div>
+        <div class="ps-stat-card__label">Shortest Read</div>
       </div>
       {{ end }}
     </div>
@@ -209,16 +209,16 @@
     <div class="ps-section__header">
       <h3 class="ps-section__title">Image Usage</h3>
     </div>
-    <div class="ps-reading-row">
-      <div class="ps-reading-stat">
-        <div class="ps-reading-stat__value">{{ $d.imageCount | lang.NumFmt 0 }}</div>
-        <div class="ps-reading-stat__label">Posts with Images</div>
+    <div class="ps-stat-row">
+      <div class="ps-stat-card">
+        <div class="ps-stat-card__value">{{ $d.imageCount | lang.NumFmt 0 }}</div>
+        <div class="ps-stat-card__label">Posts with Images</div>
       </div>
-      <div class="ps-reading-stat">
-        <div class="ps-reading-stat__value">
+      <div class="ps-stat-card">
+        <div class="ps-stat-card__value">
           {{ if gt $d.postCount 0 }}{{ mul (div (float $d.imageCount) (float $d.postCount)) 100 | lang.NumFmt 0 }}%{{ end }}
         </div>
-        <div class="ps-reading-stat__label">Of All Posts</div>
+        <div class="ps-stat-card__label">Of All Posts</div>
       </div>
     </div>
   </div>

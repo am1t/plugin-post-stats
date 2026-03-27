@@ -256,25 +256,24 @@
 /* ═══════════════════════════════
    READING TIME / IMAGE STATS
 ═══════════════════════════════ */
-.ps-reading-row {
+.ps-stat-row {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: var(--ps-gap);
 }
 
 @media (max-width: 480px) {
-  .ps-reading-row { grid-template-columns: repeat(2, 1fr); }
+  .ps-stat-row { grid-template-columns: repeat(2, 1fr); }
 }
 
-.ps-reading-stat {
+.ps-stat-card {
   border-radius: var(--ps-radius);
   border: 1px solid var(--ps-border);
   padding: 0.9rem 1rem;
   box-shadow: var(--ps-shadow);
 }
 
-
-.ps-reading-stat__value {
+.ps-stat-card__value {
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--ps-accent);
@@ -284,7 +283,7 @@
   font-family: Georgia, serif;
 }
 
-.ps-reading-stat__label {
+.ps-stat-card__label {
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
