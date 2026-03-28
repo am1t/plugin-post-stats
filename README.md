@@ -5,13 +5,13 @@ A Micro.blog plugin that adds a `/stats` page to your site displaying comprehens
 
 This plugin is built for Micro.blog by [@amit](https://micro.blog/amit).
 
-### Installing the plug-in
+## Installing the plug-in
 
 The plugin is available in the Micro.blog Plug-in directory. Just make sure you are logged in to your account, go to the "Plug-ins" section and click "Find Plug-ins". Install "Posts Stats by @amit".
 
 Once installed, you should see a new Menu entry for "Stats" pointing to `/stats`. **Note** that the first run may take some time to display the correct stats.
 
-### Stats Page Layout (v2)
+## Stats Page Layout (v2)
 
 The revamped v2 stats page includes the following sections:
 
@@ -24,7 +24,7 @@ The revamped v2 stats page includes the following sections:
 - **Word Count Over Time** — Scatter chart of word count per post across your writing history
 - **Year Recap** — A focused summary for the current year (can be disabled via plugin settings)
 
-### Shortcodes
+## Shortcodes
 
 The plugin exposes the following shortcodes you can use anywhere in your markdown pages:
 
@@ -32,6 +32,8 @@ The plugin exposes the following shortcodes you can use anywhere in your markdow
 - `{{< poststats/postcount >}}` — Replaced with your total post count
 - `{{< poststats/detailed >}}` — Embeds the full detailed stats layout (same as the `/stats` page)
 - `{{< poststats/yearrecap >}}` — Embeds just the Year Recap section
+
+## Customization
 
 ### Plugin Settings
 
@@ -42,14 +44,37 @@ The following settings are available via the Micro.blog plugin configuration UI:
 | `use_legacy_stats` | Use the original minimal stats layout instead of the revamped v2 design |
 | `disable_year_recap` | Remove the Year Recap section from the stats page |
 
-### Removing Stats from Menu
+### CSS Variables
+
+The plugin's appearance can be customized by overriding CSS variables in your blog's custom CSS at `:root { }`.
+
+**Colors**
+- `--ps-accent` — Primary chart/highlight color (default: `#3b82f6` blue)
+- `--ps-accent-light` — Chart fill/background tint (default: `rgba(59,130,246,0.12)`)
+- `--ps-accent-muted` — Secondary chart accent, e.g. hover states (default: `rgba(59,130,246,0.35)`)
+- `--ps-up` — Trend arrow color when count increased (default: `#22c55e` green)
+- `--ps-down` — Trend arrow color when count decreased (default: `#ef4444` red)
+- `--ps-neutral` — Trend arrow color when unchanged (default: `#94a3b8` grey)
+
+**Layout & Shape**
+- `--ps-gap` — Spacing between cards/sections (default: `1rem`)
+- `--ps-radius` — Border radius on cards (default: `10px`)
+
+**Borders & Shadows**
+- `--ps-border` — Card border color (default: `rgba(128,128,128,0.15)`)
+- `--ps-shadow` — Card shadow (default: subtle 1px drop shadow + border ring)
+
+**Opacity**
+- `--ps-muted` — Opacity for de-emphasised elements (default: `0.5`)
+
+## Removing Stats from Menu
 
 There is no built-in option to hide the stats page from the menu. You can work around this in two ways:
 
 1. Edit `content/stats.md` via Design > Edit Custom Themes > Post Stats plugin, and remove the value from the `menu:` field — [h/t Miraz Jordan](https://micro.blog/Miraz/12310468)
 2. Add custom CSS: `nav a[href='/stats/'] { display: none; }` — [h/t Sven Dahlstrand](https://micro.blog/sod/12310306)
 
-### Change Log
+## Change Log
 
 **Version 2.0.0:** Released 27th March, 2026
 - Revamped stats page with a modern layout and 8 new sections

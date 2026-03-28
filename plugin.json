@@ -14,7 +14,7 @@
 		},
 		{
 			"field": "params.use_legacy_stats",
-			"label": "Use the original minimal stats layout instead of the revamped design",
+			"label": "Use the original minimal stats layout",
 			"type": "boolean"
 		}
 	]
