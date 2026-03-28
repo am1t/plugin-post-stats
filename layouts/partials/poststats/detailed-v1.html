@@ -4,15 +4,15 @@
 <table class="post-stats-tbl">
     <tr>
         <td width="40%">Total Posts Published</td>
-        <td width="60%">{{ $d.postCount | lang.NumFmt 0 }}</td>
+        <td width="60%">{{ printf "%d" $d.postCount }}</td>
     </tr>
     <tr>
 		<td>Total Words Written</td>
-		<td>{{ $d.wordCount | lang.NumFmt 0 }}{{ if gt $d.wordCount 40000 }} (that's almost {{ (div $d.wordCount 40000) | lang.NumFmt 0 }} novellas){{ end }}</td>
+		<td>{{ printf "%d" $d.wordCount }}{{ if gt $d.wordCount 40000 }} (that's almost {{ printf "%d" (div $d.wordCount 40000) }} novellas){{ end }}</td>
 	</tr>
     <tr>
 		<td>Average Words per Post</td>
-		<td>{{ $d.avgWordCount | lang.NumFmt 0 }}</td>
+		<td>{{ printf "%d" $d.avgWordCount }}</td>
 	</tr>
     <tr>
 		<td>First Post Published</td>
@@ -36,11 +36,11 @@
 	</tr>
     <tr>
 		<td>Posts with Title</td>
-		<td>{{ $d.titledCount | lang.NumFmt 0 }}</td>
+		<td>{{ printf "%d" $d.titledCount }}</td>
 	</tr>
     <tr>
 		<td>Posts without Title</td>
-		<td>{{ $d.microCount | lang.NumFmt 0 }}</td>
+		<td>{{ printf "%d" $d.microCount }}</td>
 	</tr>
 </table>
 
@@ -71,7 +71,7 @@
     {{ range $d.byYear }}
         <tr>
             <td>{{ .key }}</td>
-            <td>{{ .count | lang.NumFmt 0 }}</td>
+            <td>{{ printf "%d" .count }}</td>
         </tr>
     {{ end }}
 </table>

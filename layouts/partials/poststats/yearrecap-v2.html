@@ -50,39 +50,39 @@
       <div class="ps-recap__row">
         <div class="ps-recap__stat">
           <span class="ps-recap__stat-value">
-            {{ $recapPostCount | lang.NumFmt 0 }}
+            {{ printf "%d" $recapPostCount  }}
             <span class="ps-trend ps-trend--{{ $postTrend }}">{{ $postArrow }}</span>
           </span>
           <span class="ps-recap__stat-label">Posts Published</span>
         </div>
         <div class="ps-recap__stat">
           <span class="ps-recap__stat-value">
-            {{ $recapWordCount | lang.NumFmt 0 }}
+            {{ printf "%d" $recapWordCount  }}
             <span class="ps-trend ps-trend--{{ $wordTrend }}">{{ $wordArrow }}</span>
           </span>
           <span class="ps-recap__stat-label">Words Written</span>
         </div>
         <div class="ps-recap__stat">
-          <span class="ps-recap__stat-value">{{ $recapAvgPostLength | lang.NumFmt 0 }}</span>
+          <span class="ps-recap__stat-value">{{ printf "%d" $recapAvgPostLength  }}</span>
           <span class="ps-recap__stat-label">Avg Words / Post</span>
         </div>
       </div>
 
       <ul class="ps-recap__insights">
         {{ if gt $postsWithImages 0 }}
-          <li>Posted {{ $postsWithImages | lang.NumFmt 0 }} posts with images</li>
+          <li>Posted {{ printf "%d" $postsWithImages  }} posts with images</li>
         {{ end }}
         {{ if gt $recapTitled $recapMicro }}
-          <li>More titled posts ({{ $recapTitled | lang.NumFmt 0 }}) than micro posts ({{ $recapMicro | lang.NumFmt 0 }})</li>
+          <li>More titled posts ({{ printf "%d" $recapTitled  }}) than micro posts ({{ printf "%d" $recapMicro  }})</li>
         {{ else if gt $recapMicro $recapTitled }}
-          <li>More micro posts ({{ $recapMicro | lang.NumFmt 0 }}) than titled posts ({{ $recapTitled | lang.NumFmt 0 }})</li>
+          <li>More micro posts ({{ printf "%d" $recapMicro  }}) than titled posts ({{ printf "%d" $recapTitled  }})</li>
         {{ end }}
-        <li>Average words per post: {{ $recapAvgPostLength | lang.NumFmt 0 }}</li>
+        <li>Average words per post: {{ printf "%d" $recapAvgPostLength  }}</li>
         {{ with $scratch.Get "longestPost" }}
           <li>Longest post:
             {{ if .Title }}<a href="{{ .Permalink }}">{{ .Title }}</a>
             {{ else }}<a href="{{ .Permalink }}">Micro post</a>{{ end }}
-            · {{ .WordCount | lang.NumFmt 0 }} words
+            · {{ printf "%d" .WordCount  }} words
           </li>
         {{ end }}
       </ul>

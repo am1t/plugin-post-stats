@@ -11,11 +11,11 @@
     <div class="ps-recap__year">All-time Stats</div>
     <div class="ps-recap__row">
       <div class="ps-recap__stat">
-        <span class="ps-recap__stat-value">{{ $d.postCount | lang.NumFmt 0 }}</span>
+        <span class="ps-recap__stat-value">{{ printf "%d" $d.postCount }}</span>
         <span class="ps-recap__stat-label">Total Posts</span>
       </div>
       <div class="ps-recap__stat">
-        <span class="ps-recap__stat-value">{{ $d.wordCount | lang.NumFmt 0 }}</span>
+        <span class="ps-recap__stat-value">{{ printf "%d" $d.wordCount }}</span>
         <span class="ps-recap__stat-label">Words Written</span>
       </div>
       {{ with $d.firstPost }}
@@ -34,15 +34,15 @@
     {{/* Row 1: post counts */}}
     <div class="ps-hero__row">
       <div class="ps-card">
-        <span class="ps-card__value">{{ $d.postCount | lang.NumFmt 0 }}</span>
+        <span class="ps-card__value">{{ printf "%d" $d.postCount }}</span>
         <span class="ps-card__label">Total Posts</span>
       </div>
       <div class="ps-card">
-        <span class="ps-card__value">{{ $d.titledCount | lang.NumFmt 0 }}</span>
+        <span class="ps-card__value">{{ printf "%d" $d.titledCount }}</span>
         <span class="ps-card__label">Titled Posts</span>
       </div>
       <div class="ps-card">
-        <span class="ps-card__value">{{ $d.microCount | lang.NumFmt 0 }}</span>
+        <span class="ps-card__value">{{ printf "%d" $d.microCount }}</span>
         <span class="ps-card__label">Micro Posts</span>
       </div>
     </div>
@@ -50,11 +50,11 @@
     {{/* Row 2: word counts */}}
     <div class="ps-hero__row">
       <div class="ps-card">
-        <span class="ps-card__value">{{ $d.wordCount | lang.NumFmt 0 }}</span>
+        <span class="ps-card__value">{{ printf "%d" $d.wordCount }}</span>
         <span class="ps-card__label">Total Words</span>
       </div>
       <div class="ps-card">
-        <span class="ps-card__value">{{ $d.avgWordCount | lang.NumFmt 0 }}</span>
+        <span class="ps-card__value">{{ printf "%d" $d.avgWordCount }}</span>
         <span class="ps-card__label">Avg Words / Post</span>
       </div>
       {{ if gt $d.novellaCount 0 }}
@@ -86,7 +86,7 @@
           {{ if .Title }}<a href="{{ .Permalink }}">{{ .Title }}</a>
           {{ else }}<a href="{{ .Permalink }}">Micro post</a>{{ end }}
         </span>
-        <span class="ps-spotlight-card__meta">{{ .WordCount | lang.NumFmt 0 }} words</span>
+        <span class="ps-spotlight-card__meta">{{ printf "%d" .WordCount }} words</span>
       {{ end }}
     </div>
   </div>
@@ -189,7 +189,7 @@
         <thead><tr><th>Year</th><th>Posts</th></tr></thead>
         <tbody>
           {{ range $d.byYearDesc }}
-          <tr><td>{{ .key }}</td><td>{{ .count | lang.NumFmt 0 }}</td></tr>
+          <tr><td>{{ .key }}</td><td>{{ printf "%d" .count }}</td></tr>
           {{ end }}
         </tbody>
       </table>
@@ -269,12 +269,12 @@
     </div>
     <div class="ps-stat-row">
       <div class="ps-stat-card">
-        <div class="ps-stat-card__value">{{ $d.imageCount | lang.NumFmt 0 }}</div>
+        <div class="ps-stat-card__value">{{ printf "%d" $d.imageCount }}</div>
         <div class="ps-stat-card__label">Posts with Images</div>
       </div>
       <div class="ps-stat-card">
         <div class="ps-stat-card__value">
-          {{ if gt $d.postCount 0 }}{{ mul (div (float $d.imageCount) (float $d.postCount)) 100 | lang.NumFmt 0 }}%{{ end }}
+          {{ if gt $d.postCount 0 }}{{ printf "%d" (mul (div (float $d.imageCount) (float $d.postCount)) 100) }}%{{ end }}
         </div>
         <div class="ps-stat-card__label">Of All Posts</div>
       </div>
