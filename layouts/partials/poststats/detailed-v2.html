@@ -274,7 +274,7 @@
       </div>
       <div class="ps-stat-card">
         <div class="ps-stat-card__value">
-          {{ if gt $d.postCount 0 }}{{ printf "%d" (mul (div (float $d.imageCount) (float $d.postCount)) 100) }}%{{ end }}
+          {{ if gt $d.postCount 0 }}{{ printf "%d" (int (math.Round (mul (div (float $d.imageCount) (float $d.postCount)) 100))) }}%{{ end }}
         </div>
         <div class="ps-stat-card__label">Of All Posts</div>
       </div>
