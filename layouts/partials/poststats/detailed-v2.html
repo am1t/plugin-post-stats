@@ -306,7 +306,7 @@
           {{ $weight := div (sub (math.Log $categoryCount) (math.Log $min)) (sub (math.Log $max) (math.Log $min)) }}
           {{ $currentFontSize = add $smallestFontSize (mul (sub $largestFontSize $smallestFontSize) $weight) }}
         {{ end }}
-        <a href="{{ "/categories/" | relURL }}{{ .Page.Title | urlize }}"
+        <a href="{{ .Page.RelPermalink }}"
            class="ps-cloud__item" style="font-size: {{ $currentFontSize }}rem;">
           {{ .Page.Title }}<sup>{{ $categoryCount }}</sup>
         </a>
